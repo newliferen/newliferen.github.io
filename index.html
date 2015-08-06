@@ -112,7 +112,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						
+						<a href="/tags/Java/" style="font-size: 10px;">Java</a>
 					</div>
 				</section>
 				
@@ -185,6 +185,65 @@
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-Java位运算实现权限控制" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/06/Java位运算实现权限控制/" class="article-date">
+  	<time datetime="2015-08-06T09:06:23.000Z" itemprop="datePublished">2015-08-06</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/06/Java位运算实现权限控制/">Java位运算实现权限控制</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <font color="#DCDCDC">转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a><br>参考文章：<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://my.oschina.net/pangzhuzhu/blog/301828</a></font>
+
+
+<p>&emsp;&emsp;工作几年之后，大学学过的数字电路与、或、非、异或等位运算忘的差不多了，这里使用位运算模拟linux操作系统权限，复习一下位运算。</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * @auth zhengzhi.ren</span><br><span class="line"> * @date 2015/8/6.</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyPermission</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> add = <span class="number">3</span>; <span class="comment">// 增加权限十进制表示</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> del = <span class="number">4</span>; <span class="comment">// 删除权限十进制表示</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> update = <span class="number">5</span>; <span class="comment">// 更新权限十进制表示</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="keyword">base</span> = <span class="number">2</span>;<span class="comment">// 该数字可以是一个范围</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * 增加权限</span><br><span class="line">     * @param permission</span><br><span class="line">     * @param operate</span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">addPermission</span>(<span class="params"><span class="keyword">int</span> permission, <span class="keyword">int</span> operate</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> per = <span class="keyword">base</span>&lt;&lt;operate;</span><br><span class="line">        permission |= per; <span class="comment">//增加权限时使用或，可以将权限对应的二进制位的1赋值给权限变量的0</span></span><br><span class="line">        <span class="keyword">return</span> permission;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">delPermission</span>(<span class="params"><span class="keyword">int</span> permission, <span class="keyword">int</span> operate</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">int</span> per = <span class="keyword">base</span>&lt;&lt;operate;</span><br><span class="line">        per = ~per; <span class="comment">// 按位取反，取反之前的1，取反后变为0，再和权限数字进行与运算，1&amp;0=0,1&amp;1=1，0&amp;1=0，这样删除对应权限，并且不影响原有权限</span></span><br><span class="line">        <span class="keyword">return</span> permission &amp; per;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> boolean <span class="title">hasPermission</span>(<span class="params"><span class="keyword">int</span> permission, <span class="keyword">int</span> operate</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> per = <span class="keyword">base</span>&lt;&lt;operate;</span><br><span class="line">        <span class="keyword">return</span> (permission &amp; per) == per; <span class="comment">// 1&amp;0=0;1&amp;1=1;0&amp;1=0; permission和per&amp;操作之后，如果permission对应的位为1，则和per&amp;的结果就等于per</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printPermission</span>(<span class="params"><span class="keyword">int</span> permission</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> binaryAdd = <span class="keyword">base</span>&lt;&lt;add;</span><br><span class="line">        <span class="keyword">int</span> binaryDel = <span class="keyword">base</span>&lt;&lt;del;</span><br><span class="line">        <span class="keyword">int</span> binaryUpdate = <span class="keyword">base</span>&lt;&lt;update;</span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="string">"当前用户是否有add权限："</span> + ((permission &amp; binaryAdd) == binaryAdd));</span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="string">"当前用户是否有del权限："</span> + ((permission &amp; binaryDel) == binaryDel));</span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="string">"当前用户是否有update权限："</span> + ((permission &amp; binaryUpdate) == binaryUpdate));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(<span class="params">String[] args</span>) </span>&#123;</span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="keyword">base</span>);</span><br><span class="line">        <span class="keyword">int</span> permission = <span class="number">0</span>;</span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="string">"是否有增加权限："</span> + hasPermission(permission, add));</span><br><span class="line">        <span class="comment">// 赋权-增加权限</span></span><br><span class="line">        permission = MyPermission.addPermission(permission, add);</span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="string">"是否有增加权限："</span> + hasPermission(permission, add));</span><br><span class="line">        <span class="comment">// 赋权-删除权限</span></span><br><span class="line">        permission = MyPermission.addPermission(permission, del);</span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="string">"是否有删除权限："</span> + hasPermission(permission, del));</span><br><span class="line">        <span class="comment">// 解除权限</span></span><br><span class="line">        permission = MyPermission.delPermission(permission, add);</span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="string">"是否有增加权限："</span> + hasPermission(permission, add));</span><br><span class="line">        <span class="comment">// 赋权-更新权限</span></span><br><span class="line">        permission = MyPermission.addPermission(permission, update);</span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="string">"是否有更新权限："</span> + hasPermission(permission, update));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 查看用户有哪些权限</span></span><br><span class="line">        printPermission(permission);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
   
     <article id="post-ZooKeeper应用之分分布式队列" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -674,61 +733,6 @@
   
     <h1 itemprop="name">
       <a class="article-title" href="/2015/07/24/ZooKeeper源码阅读——分布式队列（七）/">ZooKeeper源码阅读——分布式队列（七）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
-<h2 id=""> </h2>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/ZooKeeper/">ZooKeeper</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-ZooKeeper源码阅读——分布式锁（六）" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/24/ZooKeeper源码阅读——分布式锁（六）/" class="article-date">
-  	<time datetime="2015-07-23T16:09:52.000Z" itemprop="datePublished">2015-07-24</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/24/ZooKeeper源码阅读——分布式锁（六）/">ZooKeeper源码阅读——分布式锁（六）</a>
     </h1>
   
 

@@ -112,7 +112,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/Java/" style="font-size: 10px;">Java</a>
+						<a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/ZooKeeper/" style="font-size: 10px;">ZooKeeper</a>
 					</div>
 				</section>
 				
@@ -185,6 +185,67 @@
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-ZooKeeper入门" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/07/24/ZooKeeper入门/" class="article-date">
+  	<time datetime="2015-07-24T02:57:10.000Z" itemprop="datePublished">2015-07-24</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/24/ZooKeeper入门/">ZooKeeper入门</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="ZooKeeper是什么?">ZooKeeper是什么?</h1><p>&emsp;&emsp;<b>Zookeeper</b>简称ZK,是高性能、高可用的分布式协调框架，采用了自定义的<b>ZAB</b>(Zookeeper Atomic Broadcast)事务一致性协议，在高并发分布式系统环境中保证事务一致性。ZK采用类似Linux操作系统文件目录结构管理节点，节点数据常驻内存，避免磁盘I/O影响性能，并提供对用户透明的持久化功能保证数据安全。ZK适用于小量数据、高性能、高并发的应用场景。<br><img src="/img/zk_node_model.gif"/><br>&emsp;&emsp;<b>ZooKeeper</b>为用户提供以下服务:</p>
+<p><blockquote><b>命名服务</b></blockquote>&emsp;&emsp;命名服务(Naming Service)提供了一种为对象命名的机制，可以定位任何通过网络可以访问的机器上的对象，使得用户可以在无需知道对象位置的情况下获取和使用对象。服务提供方在ZK上创建临时Node（全局唯一），服务消费方通过读取ZK上的临时Node节点获取到服务提供方信息，进而调用服务提供者。通过ZK的命名服务，可以达到服务提供者动态增加或减少服务提供者服务器数量。典型示例：阿里的Dubbo框架，即采用ZK作为注册中心。[<a href="/2015/07/24/ZooKeeper%E5%BA%94%E7%94%A8%E4%B9%8B%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4/">代码示例</a>]<br><img src="/img/consumer_provider.jpg"/></p>
+<p><blockquote><b>发布订阅服务</b></blockquote>&emsp;&emsp;发布订阅模型，即配置中心，可将应用可配置项发布到ZK上，供订阅者动态获取配置，同一集群使用同一套配置，实现配置集中、动态管理，避免修改配置后重启应用服务。<br><img src="/img/publish_subscribe.jpg"/></p>
+<p><blockquote><b>负载均衡</b></blockquote>&emsp;&emsp;由于分布式系统的使用越来越多，为了使同一集群内的多台服务器负载更均衡，就需要一个能够根据服务器负载情况进行请求分发的框架，ZK正是这种可以根据服务提供者列表进行请求分发的框架，可以动态的注册和发现服务，使服务更透明，实现软负载均衡和故障恢复。<br>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/ZooKeeper/">ZooKeeper</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2015/07/24/ZooKeeper入门/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
   
     <article id="post-ZooKeeper源码阅读——分布式队列（七）" class="article article-type-post" itemscope itemprop="blogPost">
   

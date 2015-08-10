@@ -6,21 +6,25 @@
   <title>ZooKeeper源码阅读——client（二） | Techies | 优雅前行</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
- 如何连接ZooKeeper集群&amp;emsp;&amp;emsp;要想了解ZooKeeper客户端实现原理，首先需要关注一下客户端的使用方式，会使用之后，方便更进一步的了解zk的源码实现。客户端程序连接ZooKeeper集群代码如下：
-12345678910111213141516171819202122public v">
+ 如何连接ZooKeeper集群&amp;emsp;&amp;emsp;要想了解ZooKeeper客户端实现原理，首先需要关注一下客户端的使用方式，会使用之后，方便更进一步的了解zk的源码实现。客户端程序连接ZooKeeper集群代码
+
+12345678910111213141516171819202122public voi">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ZooKeeper源码阅读——client（二）">
 <meta property="og:url" content="http://yoursite.com/2015/07/24/ZooKeeper源码阅读——client（二）/index.html">
 <meta property="og:site_name" content="Techies | 优雅前行">
 <meta property="og:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
- 如何连接ZooKeeper集群&amp;emsp;&amp;emsp;要想了解ZooKeeper客户端实现原理，首先需要关注一下客户端的使用方式，会使用之后，方便更进一步的了解zk的源码实现。客户端程序连接ZooKeeper集群代码如下：
-12345678910111213141516171819202122public v">
-<meta property="og:updated_time" content="2015-08-07T14:52:16.165Z">
+ 如何连接ZooKeeper集群&amp;emsp;&amp;emsp;要想了解ZooKeeper客户端实现原理，首先需要关注一下客户端的使用方式，会使用之后，方便更进一步的了解zk的源码实现。客户端程序连接ZooKeeper集群代码
+
+12345678910111213141516171819202122public voi">
+<meta property="og:image" content="http://yoursite.com/img/zk_client_thread_model.jpg">
+<meta property="og:updated_time" content="2015-08-07T16:20:23.654Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ZooKeeper源码阅读——client（二）">
 <meta name="twitter:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
- 如何连接ZooKeeper集群&amp;emsp;&amp;emsp;要想了解ZooKeeper客户端实现原理，首先需要关注一下客户端的使用方式，会使用之后，方便更进一步的了解zk的源码实现。客户端程序连接ZooKeeper集群代码如下：
-12345678910111213141516171819202122public v">
+ 如何连接ZooKeeper集群&amp;emsp;&amp;emsp;要想了解ZooKeeper客户端实现原理，首先需要关注一下客户端的使用方式，会使用之后，方便更进一步的了解zk的源码实现。客户端程序连接ZooKeeper集群代码
+
+12345678910111213141516171819202122public voi">
   
     <link rel="alternative" href="/atom.xml" title="Techies | 优雅前行" type="application/atom+xml">
   
@@ -119,7 +123,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
+						<a href="/tags/AOP/" style="font-size: 10px;">AOP</a> <a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
 					</div>
 				</section>
 				
@@ -229,8 +233,10 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
-<h2 id=""> </h2><p><blockquote>如何连接ZooKeeper集群</blockquote><br>&emsp;&emsp;要想了解ZooKeeper客户端实现原理，首先需要关注一下客户端的使用方式，会使用之后，方便更进一步的了解zk的源码实现。客户端程序连接ZooKeeper集群代码如下：</p>
+<h2 id=""> </h2><blockquote>如何连接ZooKeeper集群</blockquote><br>&emsp;&emsp;要想了解ZooKeeper客户端实现原理，首先需要关注一下客户端的使用方式，会使用之后，方便更进一步的了解zk的源码实现。<br><br><blockquote>客户端程序连接ZooKeeper集群代码</blockquote>
+
 <figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">connect</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">final</span> CountDownLatch semaphore = <span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line">        ZooKeeper zkConn = <span class="keyword">new</span> ZooKeeper(host, timeout, <span class="keyword">new</span> Watcher() &#123;</span><br><span class="line">            <span class="comment">// 连接server成功后，由ZK发起回调通知，使用者收到连接成功的通知后即可进行后续操作</span></span><br><span class="line">            <span class="annotation">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent watchedEvent)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (Event.KeeperState.SyncConnected == watchedEvent.getState()) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (Event.EventType.None == watchedEvent.getType() &amp;&amp; watchedEvent.getPath() == <span class="keyword">null</span>) &#123;</span><br><span class="line">                        System.out.println(<span class="string">"ZK connect success!"</span>);</span><br><span class="line">                        semaphore.countDown();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        semaphore.await();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><blockquote>客户端线程模型</blockquote><br><img src="/img/zk_client_thread_model.jpg" alt="客户端线程模型"></p>
 <p><blockquote>ZooKeeper实现原理</blockquote><br>&emsp;&emsp;接下来我们来分析zk客户端的源码实现。ZooKeeper为线程安全类，用户可以放心使用。客户端类库中最主要的三个类：ClientCnxn、SendThread、EventThread，后两者做为前者的内部类存在，当客户端创建ZooKeeper对象时，在ZooKeeper类的构造函数内解析客户端传入的server地址、实例化ClientCnxn对象，并通过ClientCnxn对象的start()方法启动SendThread和EventThread两个线程。<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ZooKeeper</span><span class="params">(String connectString, <span class="keyword">int</span> sessionTimeout, Watcher watcher,</span><br><span class="line">           <span class="keyword">boolean</span> canBeReadOnly)</span></span><br><span class="line">       <span class="keyword">throws</span> IOException</span><br><span class="line">   </span>&#123;</span><br><span class="line">       LOG.info(<span class="string">"Initiating client connection, connectString="</span> + connectString</span><br><span class="line">               + <span class="string">" sessionTimeout="</span> + sessionTimeout + <span class="string">" watcher="</span> + watcher);</span><br><span class="line"></span><br><span class="line">       watchManager.defaultWatcher = watcher;</span><br><span class="line">	<span class="comment">// connectString形如：192.168.155.144:2181,192.168.155.155:2181</span></span><br><span class="line">       ConnectStringParser connectStringParser = <span class="keyword">new</span> ConnectStringParser(</span><br><span class="line">               connectString);</span><br><span class="line">       <span class="comment">// 持有所有server连接对象</span></span><br><span class="line">       HostProvider hostProvider = <span class="keyword">new</span> StaticHostProvider(</span><br><span class="line">               connectStringParser.getServerAddresses());</span><br><span class="line">	<span class="comment">// 实例化ClientCnxn对象</span></span><br><span class="line">       cnxn = <span class="keyword">new</span> ClientCnxn(connectStringParser.getChrootPath(),</span><br><span class="line">               hostProvider, sessionTimeout, <span class="keyword">this</span>, watchManager,</span><br><span class="line">               getClientCnxnSocket(), canBeReadOnly);</span><br><span class="line">	<span class="comment">// 启动客户端线程</span></span><br><span class="line">       cnxn.start();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
 <figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       sendThread.start();</span><br><span class="line">       eventThread.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>&emsp;&emsp;其中，SendThread线程负责从与server端建立连接、定时发送心跳消息、从outgoingQueue队列中取得任务，并通过tcp连接将请求发送到server端。SendThread类收到server端响应事件后，向waitingEvents队列中addwatcher对象，由EventThread从waitingEvents队列中获取事件，判断事件类型，回调客户端的Watcher实现类。一个完成的客户端流程就完成了。创建连接时的Watcher实现类将作为zk的默认watcher类。</p>

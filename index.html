@@ -112,7 +112,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/AOP/" style="font-size: 10px;">AOP</a> <a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
+						<a href="/tags/AOP/" style="font-size: 13.33px;">AOP</a> <a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/Spring/" style="font-size: 13.33px;">Spring</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
 					</div>
 				</section>
 				
@@ -186,6 +186,234 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-ZooKeeper源码阅读——MyCommandOptions" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/26/ZooKeeper源码阅读——MyCommandOptions/" class="article-date">
+  	<time datetime="2015-08-26T15:57:00.000Z" itemprop="datePublished">2015-08-26</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/26/ZooKeeper源码阅读——MyCommandOptions/">ZooKeeper源码阅读——MyCommandOptions</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
+<h2 id=""> </h2><p>&emsp;&emsp;MyCommandOptions类为命令处理器类，该类作为用户控制台和ZooKeeper核心类的一个适配接口，解析客户端输入命令，将用户输入内容解析为command和args。针对不同的command调用ZooKeeper类的对应方法，将args中path作为参数传给ZooKeeper类，由ZooKeeper进行请求对象封装，并向ZK server发起请求和处理响应结果。</p>
+<p><blockquote><b>解析命令</b></blockquote><br><figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="built_in">boolean</span> parseCommand( <span class="keyword">String</span> cmdstring ) &#123;</span><br><span class="line">    StringTokenizer cmdTokens = <span class="keyword">new</span> StringTokenizer(cmdstring, <span class="string">" "</span>);          </span><br><span class="line">    <span class="keyword">String</span>[] args = <span class="keyword">new</span> <span class="keyword">String</span>[cmdTokens.countTokens()];</span><br><span class="line">    <span class="built_in">int</span> tokenIndex = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (cmdTokens.hasMoreTokens()) &#123;</span><br><span class="line">        args[tokenIndex] = cmdTokens.nextToken();</span><br><span class="line">        tokenIndex++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (args.length == <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    command = args[<span class="number">0</span>];</span><br><span class="line">    cmdArgs = Arrays.asList(args);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><blockquote><b>处理命令</b></blockquote><br>以“ls /”命令为例，实际就是调用ZooKeeper对象的获取子节点方法。<br><figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="params">(cmd.equals<span class="params">(<span class="string">"ls"</span>)</span> &amp;&amp; args.length &gt;= <span class="number">2</span>)</span> &#123;</span><br><span class="line">    path = args[<span class="number">1</span>];</span><br><span class="line">    List&lt;String&gt; <span class="built_in">children</span> = zk.getChildren<span class="params">(path, watch)</span>;</span><br><span class="line">    System.out.println<span class="params">(children)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-ZooKeeper源码阅读——debug-client命令" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/26/ZooKeeper源码阅读——debug-client命令/" class="article-date">
+  	<time datetime="2015-08-26T15:43:09.000Z" itemprop="datePublished">2015-08-26</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/26/ZooKeeper源码阅读——debug-client命令/">ZooKeeper源码阅读——debug client命令</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
+<h2 id=""> </h2><p>&emsp;&emsp;客户端启动过程可以通过debug org.apache.zookeeper.ZooKeeperMain类即可了解启动时zk客户端都做了些什么以及核心处理类的功能，这里不再赘述，接下来记录一下如何debug客户端命令。</p>
+<p>&emsp;&emsp;由于zk客户端启动后，ZooKeeperMain类内部通过jline监听客户端输入命令，然后执行，所以这里改造一下这个监听方法代码，即可实现通过IDE控制台输入命令debug客户端代码，简单方便。<br><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">void <span class="keyword">run</span>() throws KeeperException, IOException, InterruptedException &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">cl</span>.getCommand() == null) &#123;</span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="string">"Welcome to ZooKeeper!"</span>);</span><br><span class="line">        try &#123;</span><br><span class="line">        	Scanner <span class="keyword">in</span> = new Scanner(System.<span class="keyword">in</span>);</span><br><span class="line">        	String <span class="keyword">line</span>;</span><br><span class="line">        	System.<span class="keyword">out</span>.println(<span class="string">"Please enter your command"</span>);</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">in</span>.hasNext()) &#123;</span><br><span class="line">            	<span class="keyword">line</span> = <span class="keyword">in</span>.nextLine();</span><br><span class="line">                executeLine(<span class="keyword">line</span>);</span><br><span class="line">            	System.<span class="keyword">out</span>.println(<span class="string">"Please enter your command"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (Exception <span class="keyword">e</span>) &#123;</span><br><span class="line">            <span class="keyword">LOG</span>.debug(<span class="string">"Error："</span>, <span class="keyword">e</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;使用以上代码替换原有run()方法，以debug模式运行ZooKeeperMain类main()方法，即可debug客户端命令。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-ZooKeeper源码阅读——server（一）" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/26/ZooKeeper源码阅读——server（一）/" class="article-date">
+  	<time datetime="2015-08-26T14:44:26.000Z" itemprop="datePublished">2015-08-26</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/26/ZooKeeper源码阅读——server（一）/">ZooKeeper源码阅读——server（一）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
+<h2 id=""> </h2>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-Spring拦截器切面配置" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/11/Spring拦截器切面配置/" class="article-date">
+  	<time datetime="2015-08-11T06:38:50.000Z" itemprop="datePublished">2015-08-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/11/Spring拦截器切面配置/">Spring拦截器切面配置</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font>
+
+<p>&emsp;&emsp;本文记录重点不是spring拦截器的配置方式，而是使用spring aop切面注解方式代替传统的在spring mvc配置文件中配置mvc:interceptor方法。这种传统方式配置起来比较灵活，修改配置后重启系统即可，不需要重新发布到线上，缺点是配置较臃肿，如果请求路径无法使用通配符，那么每个路径都需要在拦截器的配置中写一遍，但是使用切面配置的方式，代码相对优雅很多。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AOP/">AOP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
     <article id="post-Spring-aop无法拦截controller" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -203,7 +431,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/10/Spring-aop无法拦截controller/">Spring aop无法拦截controller</a>
+      <a class="article-title" href="/2015/08/10/Spring-aop无法拦截controller/">Spring aop无法拦截Controller</a>
     </h1>
   
 
@@ -212,7 +440,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>&emsp;&emsp;今天在已有项目中开发一个spring面向切面的功能，发现切面在Controller中不生效，经查，是由于把<aop:aspectj-autoproxy>配置在了applicationContext.xml配置文件中了。如果需要切面在Controller中生效，需要在mvc.xml配置文件中增加<aop:aspectj-autoproxy proxy-target-class="true">。</aop:aspectj-autoproxy></aop:aspectj-autoproxy></p>
+        <p>&emsp;&emsp;今天在已有项目中开发一个spring面向切面的功能，发现切面在Controller中不生效，经查，是由于把aop:aspectj-autoproxy配置在了applicationContext.xml配置文件中了。如果需要切面在Controller中生效，需要在mvc.xml配置文件中增加aop:aspectj-autoproxy proxy-target-class=”true”。</p>
 <figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import java.lang.annotation.<span class="keyword">*</span>;</span><br><span class="line"></span><br><span class="line">/<span class="keyword">*</span><span class="keyword">*</span></span><br><span class="line"> <span class="keyword">*</span> <span class="comment">@auth zhengzhi.ren</span></span><br><span class="line"> <span class="keyword">*</span> <span class="comment">@date 2015/8/10.</span></span><br><span class="line"> <span class="keyword">*</span>/</span><br><span class="line"></span><br><span class="line"><span class="comment">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="comment">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="comment">@Inherited</span></span><br><span class="line"><span class="comment">@Documented</span></span><br><span class="line">public <span class="comment">@interface LoginRequired &#123;</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.aspectj.lang.JoinPoint;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Aspect;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Before;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Pointcut;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * <span class="doctag">@auth</span> zhengzhi.ren</span><br><span class="line"> * <span class="doctag">@date</span> 2015/8/10.</span><br><span class="line"> */</span></span><br><span class="line"><span class="annotation">@Component</span></span><br><span class="line"><span class="annotation">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginCheckAspect</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Pointcut</span>(<span class="string">"@annotation(com.xxx.LoginRequired)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">annotation</span> <span class="params">()</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Before</span>(<span class="string">"annotation ()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">(JoinPoint joinPoint)</span> <span class="keyword">throws</span> Throwable</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"....."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>spring mvc.xml配置文件中增加：</p>
@@ -529,255 +757,6 @@
 
       
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-Java-Web服务器负载指标" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/25/Java-Web服务器负载指标/" class="article-date">
-  	<time datetime="2015-07-25T13:53:27.000Z" itemprop="datePublished">2015-07-25</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/25/Java-Web服务器负载指标/">Java Web服务器负载指标</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>&emsp;&emsp;目前Java web应用中大规模使用分布式系统和集群，集群中存在多台服务器对外提供服务，那么就存在一个问题，如何确定一个请求应该分发到哪台服务器上呢，这就需要获取当前服务器CPU、内存、网络、文件句柄的使用情况，合理分发请求，以使集群中所有服务器达到负载均衡的效果。</p>
-<p><blockquote><b>获取CPU利用率</b></blockquote><br>&emsp;&emsp;通过使用java.lang.Runtime类执行cat /proc/stat命令获取Cpu时钟数据，进行Cpu利用率计算。“proc文件系统是一个伪文件系统，它只存在内存当中，而不占用外存空间。它以文件系统的方式为访问系统内核数据的操作提供接口。用户和应用程序可以通过proc得到系统的信息，并可以改变内核的某些参数。” 因此，程序在从/proc/stat中获取Cpu指标时，不会发生磁盘I/O，计算Cpu使用率的实时性更强，计算结果更可靠。[<a href="http://www.linuxhowtos.org/System/procstat.htm">参数解释</a>]<br>参考地址：<a href="http://blog.csdn.net/blue_jjw/article/details/8741000">http://blog.csdn.net/blue_jjw/article/details/8741000</a></p>
-<p><blockquote><b>代码实现</b></blockquote><br>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Java/">Java</a>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a  href="/2015/07/25/Java-Web服务器负载指标/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-ZooKeeper应用之负载均衡" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/25/ZooKeeper应用之负载均衡/" class="article-date">
-  	<time datetime="2015-07-25T05:01:44.000Z" itemprop="datePublished">2015-07-25</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/25/ZooKeeper应用之负载均衡/">ZooKeeper应用之负载均衡</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote><b>负载均衡</b></blockquote>
-
-<p>&emsp;&emsp;服务器端负载均衡分为算法包括：轮循算法（Round Robin）、哈希算法（HASH）、响应速度算法（Response Time）、加权法（Weighted ）等。网上有文章提到“最少连接算法（Least Connection）”也是负载均衡算法的一种，当然，这样说是需要有前提条件的，就是当服务器性能良好，可以及时处理所有请求的时候，最少连接算法才能达到负载均衡的目的，否则最少连接的服务器可能正在处理比较耗时的操作，继续将请求分发到该服务器可能导致该服务器load值升高，性能下降。参见<a href="https://devcentral.f5.com/articles/back-to-basics-least-connections-is-not-least-loaded">https://devcentral.f5.com/articles/back-to-basics-least-connections-is-not-least-loaded</a> 。之后我会写关于负载均衡各类算法的博客。</p>
-<p><blockquote><b>ZK实现负载均衡</b></blockquote>&emsp;&emsp;使用zk做负载均衡，需要在zk上指定path下注册提供服务的集群中每个节点的ip地址，消费者需要在该path上注册watcher，当服务提供者集群中增删几点时，zk会发起watcher通知，所有消费者都会收到该watcher回调，此时，消费者可以及时知晓服务提供者集群中节点状况，在可用服务器列表中进行负载均衡计算。</p>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2015/07/25/ZooKeeper应用之负载均衡/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-ZooKeeper应用入门之订阅-发布" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/25/ZooKeeper应用入门之订阅-发布/" class="article-date">
-  	<time datetime="2015-07-25T02:48:22.000Z" itemprop="datePublished">2015-07-25</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/25/ZooKeeper应用入门之订阅-发布/">ZooKeeper应用入门之订阅/发布</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><blockquote><b>发布/订阅</b></blockquote><font size="1px"><a href="/2015/07/24/ZooKeeper入门/">点击这里</a>查看发布/订阅讲解</font></p>
-<ul>
-<li>pom依赖</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">properties</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">slf4j.version</span>&gt;</span>1.7.5<span class="tag">&lt;/<span class="title">slf4j.version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">zookeeper.version</span>&gt;</span>3.4.6<span class="tag">&lt;/<span class="title">zookeeper.version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">zkclient.version</span>&gt;</span>0.2-SNAPSHOT<span class="tag">&lt;/<span class="title">zkclient.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="title">dependencies</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>$&#123;zookeeper.version&#125;<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.github.sgroschupf<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>zkclient<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>$&#123;zkclient.version&#125;<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-framework<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-recipes<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-test<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>获取ZK连接
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2015/07/25/ZooKeeper应用入门之订阅-发布/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-ZooKeeper应用之命名空间" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/24/ZooKeeper应用之命名空间/" class="article-date">
-  	<time datetime="2015-07-24T15:00:26.000Z" itemprop="datePublished">2015-07-24</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/24/ZooKeeper应用之命名空间/">ZooKeeper应用之命名空间</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><blockquote><b>命名服务</b></blockquote><font size="1px"><a href="/2015/07/24/ZooKeeper入门/">点击这里</a>查看命名空间讲解</font></p>
-<ul>
-<li>pom依赖</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">properties</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">slf4j.version</span>&gt;</span>1.7.5<span class="tag">&lt;/<span class="title">slf4j.version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">zookeeper.version</span>&gt;</span>3.4.6<span class="tag">&lt;/<span class="title">zookeeper.version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">zkclient.version</span>&gt;</span>0.2-SNAPSHOT<span class="tag">&lt;/<span class="title">zkclient.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="title">dependencies</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>$&#123;zookeeper.version&#125;<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.github.sgroschupf<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>zkclient<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>$&#123;zkclient.version&#125;<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-framework<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-recipes<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-test<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>ZK客户端类</p>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2015/07/24/ZooKeeper应用之命名空间/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>

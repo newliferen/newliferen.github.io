@@ -112,7 +112,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/AOP/" style="font-size: 10px;">AOP</a> <a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
+						<a href="/tags/AOP/" style="font-size: 13.33px;">AOP</a> <a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/Spring/" style="font-size: 13.33px;">Spring</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
 					</div>
 				</section>
 				
@@ -185,6 +185,255 @@
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-Java-Web服务器负载指标" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/07/25/Java-Web服务器负载指标/" class="article-date">
+  	<time datetime="2015-07-25T13:53:27.000Z" itemprop="datePublished">2015-07-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/25/Java-Web服务器负载指标/">Java Web服务器负载指标</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>&emsp;&emsp;目前Java web应用中大规模使用分布式系统和集群，集群中存在多台服务器对外提供服务，那么就存在一个问题，如何确定一个请求应该分发到哪台服务器上呢，这就需要获取当前服务器CPU、内存、网络、文件句柄的使用情况，合理分发请求，以使集群中所有服务器达到负载均衡的效果。</p>
+<p><blockquote><b>获取CPU利用率</b></blockquote><br>&emsp;&emsp;通过使用java.lang.Runtime类执行cat /proc/stat命令获取Cpu时钟数据，进行Cpu利用率计算。“proc文件系统是一个伪文件系统，它只存在内存当中，而不占用外存空间。它以文件系统的方式为访问系统内核数据的操作提供接口。用户和应用程序可以通过proc得到系统的信息，并可以改变内核的某些参数。” 因此，程序在从/proc/stat中获取Cpu指标时，不会发生磁盘I/O，计算Cpu使用率的实时性更强，计算结果更可靠。[<a href="http://www.linuxhowtos.org/System/procstat.htm">参数解释</a>]<br>参考地址：<a href="http://blog.csdn.net/blue_jjw/article/details/8741000">http://blog.csdn.net/blue_jjw/article/details/8741000</a></p>
+<p><blockquote><b>代码实现</b></blockquote><br>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Java/">Java</a>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a  href="/2015/07/25/Java-Web服务器负载指标/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-ZooKeeper应用之负载均衡" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/07/25/ZooKeeper应用之负载均衡/" class="article-date">
+  	<time datetime="2015-07-25T05:01:44.000Z" itemprop="datePublished">2015-07-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/25/ZooKeeper应用之负载均衡/">ZooKeeper应用之负载均衡</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote><b>负载均衡</b></blockquote>
+
+<p>&emsp;&emsp;服务器端负载均衡分为算法包括：轮循算法（Round Robin）、哈希算法（HASH）、响应速度算法（Response Time）、加权法（Weighted ）等。网上有文章提到“最少连接算法（Least Connection）”也是负载均衡算法的一种，当然，这样说是需要有前提条件的，就是当服务器性能良好，可以及时处理所有请求的时候，最少连接算法才能达到负载均衡的目的，否则最少连接的服务器可能正在处理比较耗时的操作，继续将请求分发到该服务器可能导致该服务器load值升高，性能下降。参见<a href="https://devcentral.f5.com/articles/back-to-basics-least-connections-is-not-least-loaded">https://devcentral.f5.com/articles/back-to-basics-least-connections-is-not-least-loaded</a> 。之后我会写关于负载均衡各类算法的博客。</p>
+<p><blockquote><b>ZK实现负载均衡</b></blockquote>&emsp;&emsp;使用zk做负载均衡，需要在zk上指定path下注册提供服务的集群中每个节点的ip地址，消费者需要在该path上注册watcher，当服务提供者集群中增删几点时，zk会发起watcher通知，所有消费者都会收到该watcher回调，此时，消费者可以及时知晓服务提供者集群中节点状况，在可用服务器列表中进行负载均衡计算。</p>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2015/07/25/ZooKeeper应用之负载均衡/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-ZooKeeper应用入门之订阅-发布" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/07/25/ZooKeeper应用入门之订阅-发布/" class="article-date">
+  	<time datetime="2015-07-25T02:48:22.000Z" itemprop="datePublished">2015-07-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/25/ZooKeeper应用入门之订阅-发布/">ZooKeeper应用入门之订阅/发布</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><blockquote><b>发布/订阅</b></blockquote><font size="1px"><a href="/2015/07/24/ZooKeeper入门/">点击这里</a>查看发布/订阅讲解</font></p>
+<ul>
+<li>pom依赖</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">properties</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">slf4j.version</span>&gt;</span>1.7.5<span class="tag">&lt;/<span class="title">slf4j.version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">zookeeper.version</span>&gt;</span>3.4.6<span class="tag">&lt;/<span class="title">zookeeper.version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">zkclient.version</span>&gt;</span>0.2-SNAPSHOT<span class="tag">&lt;/<span class="title">zkclient.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="title">dependencies</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>$&#123;zookeeper.version&#125;<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.github.sgroschupf<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>zkclient<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>$&#123;zkclient.version&#125;<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-framework<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-recipes<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-test<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取ZK连接
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2015/07/25/ZooKeeper应用入门之订阅-发布/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-ZooKeeper应用之命名空间" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/07/24/ZooKeeper应用之命名空间/" class="article-date">
+  	<time datetime="2015-07-24T15:00:26.000Z" itemprop="datePublished">2015-07-24</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/24/ZooKeeper应用之命名空间/">ZooKeeper应用之命名空间</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><blockquote><b>命名服务</b></blockquote><font size="1px"><a href="/2015/07/24/ZooKeeper入门/">点击这里</a>查看命名空间讲解</font></p>
+<ul>
+<li>pom依赖</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">properties</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">slf4j.version</span>&gt;</span>1.7.5<span class="tag">&lt;/<span class="title">slf4j.version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">zookeeper.version</span>&gt;</span>3.4.6<span class="tag">&lt;/<span class="title">zookeeper.version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">zkclient.version</span>&gt;</span>0.2-SNAPSHOT<span class="tag">&lt;/<span class="title">zkclient.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="title">dependencies</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>$&#123;zookeeper.version&#125;<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.github.sgroschupf<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>zkclient<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>$&#123;zkclient.version&#125;<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-framework<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-recipes<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>curator-test<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="title">version</span>&gt;</span>2.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>ZK客户端类</p>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2015/07/24/ZooKeeper应用之命名空间/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
   
     <article id="post-IntelliJ-IDEA运行test控制台中文乱码" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -508,272 +757,6 @@
 
       
 
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-ZooKeeper源码阅读——线程模型（三）" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/24/ZooKeeper源码阅读——线程模型（三）/" class="article-date">
-  	<time datetime="2015-07-23T16:08:32.000Z" itemprop="datePublished">2015-07-24</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/24/ZooKeeper源码阅读——线程模型（三）/">ZooKeeper源码阅读——线程模型（三）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
-<h2 id=""> </h2>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-ZooKeeper源码阅读——client（二）" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/24/ZooKeeper源码阅读——client（二）/" class="article-date">
-  	<time datetime="2015-07-23T16:08:06.000Z" itemprop="datePublished">2015-07-24</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/24/ZooKeeper源码阅读——client（二）/">ZooKeeper源码阅读——client（二）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
-<h2 id=""> </h2><blockquote>如何连接ZooKeeper集群</blockquote><br>&emsp;&emsp;要想了解ZooKeeper客户端实现原理，首先需要关注一下客户端的使用方式，会使用之后，方便更进一步的了解zk的源码实现。<br><br><blockquote>客户端程序连接ZooKeeper集群代码</blockquote>
-
-<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">connect</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">final</span> CountDownLatch semaphore = <span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line">        ZooKeeper zkConn = <span class="keyword">new</span> ZooKeeper(host, timeout, <span class="keyword">new</span> Watcher() &#123;</span><br><span class="line">            <span class="comment">// 连接server成功后，由ZK发起回调通知，使用者收到连接成功的通知后即可进行后续操作</span></span><br><span class="line">            <span class="annotation">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent watchedEvent)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (Event.KeeperState.SyncConnected == watchedEvent.getState()) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (Event.EventType.None == watchedEvent.getType() &amp;&amp; watchedEvent.getPath() == <span class="keyword">null</span>) &#123;</span><br><span class="line">                        System.out.println(<span class="string">"ZK connect success!"</span>);</span><br><span class="line">                        semaphore.countDown();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        semaphore.await();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><blockquote>客户端线程模型</blockquote><br><img src="/img/zk_client_thread_model.jpg" alt="客户端线程模型"></p>
-<p><blockquote>ZooKeeper实现原理</blockquote><br>&emsp;&emsp;接下来我们来分析zk客户端的源码实现。ZooKeeper为线程安全类，用户可以放心使用。客户端类库中最主要的三个类：ClientCnxn、SendThread、EventThread，后两者做为前者的内部类存在，当客户端创建ZooKeeper对象时，在ZooKeeper类的构造函数内解析客户端传入的server地址、实例化ClientCnxn对象，并通过ClientCnxn对象的start()方法启动SendThread和EventThread两个线程。<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ZooKeeper</span><span class="params">(String connectString, <span class="keyword">int</span> sessionTimeout, Watcher watcher,</span><br><span class="line">           <span class="keyword">boolean</span> canBeReadOnly)</span></span><br><span class="line">       <span class="keyword">throws</span> IOException</span><br><span class="line">   </span>&#123;</span><br><span class="line">       LOG.info(<span class="string">"Initiating client connection, connectString="</span> + connectString</span><br><span class="line">               + <span class="string">" sessionTimeout="</span> + sessionTimeout + <span class="string">" watcher="</span> + watcher);</span><br><span class="line"></span><br><span class="line">       watchManager.defaultWatcher = watcher;</span><br><span class="line">	<span class="comment">// connectString形如：192.168.155.144:2181,192.168.155.155:2181</span></span><br><span class="line">       ConnectStringParser connectStringParser = <span class="keyword">new</span> ConnectStringParser(</span><br><span class="line">               connectString);</span><br><span class="line">       <span class="comment">// 持有所有server连接对象</span></span><br><span class="line">       HostProvider hostProvider = <span class="keyword">new</span> StaticHostProvider(</span><br><span class="line">               connectStringParser.getServerAddresses());</span><br><span class="line">	<span class="comment">// 实例化ClientCnxn对象</span></span><br><span class="line">       cnxn = <span class="keyword">new</span> ClientCnxn(connectStringParser.getChrootPath(),</span><br><span class="line">               hostProvider, sessionTimeout, <span class="keyword">this</span>, watchManager,</span><br><span class="line">               getClientCnxnSocket(), canBeReadOnly);</span><br><span class="line">	<span class="comment">// 启动客户端线程</span></span><br><span class="line">       cnxn.start();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       sendThread.start();</span><br><span class="line">       eventThread.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp;其中，SendThread线程负责从与server端建立连接、定时发送心跳消息、从outgoingQueue队列中取得任务，并通过tcp连接将请求发送到server端。SendThread类收到server端响应事件后，向waitingEvents队列中addwatcher对象，由EventThread从waitingEvents队列中获取事件，判断事件类型，回调客户端的Watcher实现类。一个完成的客户端流程就完成了。创建连接时的Watcher实现类将作为zk的默认watcher类。</p>
-<p><blockquote>StaticHostProvider连接持有者</blockquote><br>StaticHostProvider类的功能非常简单</p>
-<ol>
-<li>该类持有解析之后的zk server所有连接对象。</li>
-<li>采用轮询算法作为负载均衡策略，从StaticHostProvider的所有连接对象中获取一个连接，这个连提供给ClientCnxn对象使用。</li>
-</ol>
-<figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"> public StaticHostProvider<span class="params">(Collection&lt;InetSocketAddress&gt; serverAddresses)</span></span><br><span class="line">        throws UnknownHostException &#123;</span><br><span class="line">    <span class="keyword">for</span> <span class="params">(InetSocketAddress address : serverAddresses)</span> &#123;</span><br><span class="line">        InetAddress ia = address.getAddress<span class="params">()</span>;</span><br><span class="line">        InetAddress resolvedAddresses[] = InetAddress.getAllByName<span class="params">(<span class="params">(ia!=null)</span> ? ia.getHostAddress<span class="params">()</span>:</span><br><span class="line">            address.getHostName<span class="params">()</span>)</span>;</span><br><span class="line">        <span class="keyword">for</span> <span class="params">(InetAddress resolvedAddress : resolvedAddresses)</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> <span class="params">(resolvedAddress.toString<span class="params">()</span>.startsWith<span class="params">(<span class="string">"/"</span>)</span> </span><br><span class="line">                    &amp;&amp; resolvedAddress.getAddress<span class="params">()</span> != null)</span> &#123;</span><br><span class="line">                this.serverAddresses.add<span class="params">(</span><br><span class="line">                        new InetSocketAddress<span class="params">(InetAddress.getByAddress<span class="params">(</span><br><span class="line">                                address.getHostName<span class="params">()</span>,</span><br><span class="line">                                resolvedAddress.getAddress<span class="params">()</span>)</span>, </span><br><span class="line">                                address.getPort<span class="params">()</span>)</span>)</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                this.serverAddresses.add<span class="params">(new InetSocketAddress<span class="params">(resolvedAddress.getHostAddress<span class="params">()</span>, address.getPort<span class="params">()</span>)</span>)</span>;</span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> <span class="params">(this.serverAddresses.isEmpty<span class="params">()</span>)</span> &#123;</span><br><span class="line">        throw new IllegalArgumentException<span class="params">(</span><br><span class="line">                <span class="string">"A HostProvider may not be empty!"</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    Collections.shuffle<span class="params">(this.serverAddresses)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public InetSocketAddress next<span class="params">(long spinDelay)</span> &#123;</span><br><span class="line">        ++currentIndex;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(currentIndex == serverAddresses.size<span class="params">()</span>)</span> &#123;</span><br><span class="line">            currentIndex = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(currentIndex == lastIndex &amp;&amp; spinDelay &gt; <span class="number">0</span>)</span> &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                Thread.sleep<span class="params">(spinDelay)</span>;</span><br><span class="line">            &#125; catch <span class="params">(InterruptedException e)</span> &#123;</span><br><span class="line">                LOG.warn<span class="params">(<span class="string">"Unexpected exception"</span>, e)</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(lastIndex == -<span class="number">1</span>)</span> &#123;</span><br><span class="line">            <span class="comment">// We don't want to sleep on the first ever connect attempt.</span></span><br><span class="line">            lastIndex = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return serverAddresses.get<span class="params">(currentIndex)</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><blockquote>SendThread</blockquote><br>SendThread类主要实现的功能有三个：</p>
-<ul>
-<li>建立到zk server端的tcp连接</li>
-</ul>
-<figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="params">(!clientCnxnSocket.isConnected<span class="params">()</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span><span class="params">(!isFirstConnect)</span>&#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep<span class="params">(r.nextInt<span class="params">(<span class="number">1000</span>)</span>)</span>;</span><br><span class="line">        &#125; catch <span class="params">(InterruptedException e)</span> &#123;</span><br><span class="line">            LOG.warn<span class="params">(<span class="string">"Unexpected exception"</span>, e)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// don't re-establish connection if we are closing</span></span><br><span class="line">    <span class="keyword">if</span> <span class="params">(closing || !state.isAlive<span class="params">()</span>)</span> &#123;</span><br><span class="line">        break;</span><br><span class="line">    &#125;</span><br><span class="line">    startConnect<span class="params">()</span>;</span><br><span class="line">    clientCnxnSocket.updateLastSendAndHeard<span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>定时向zk server端发送心跳信息</li>
-</ul>
-<figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="params">(state.isConnected<span class="params">()</span>)</span> &#123;</span><br><span class="line">	<span class="comment">//1000(1 second) is to prevent race condition missing to send the second ping</span></span><br><span class="line">	<span class="comment">//also make sure not to send too many pings when readTimeout is small </span></span><br><span class="line">    int timeToNextPing = readTimeout / <span class="number">2</span> - clientCnxnSocket.getIdleSend<span class="params">()</span> - </span><br><span class="line">    		<span class="params">(<span class="params">(clientCnxnSocket.getIdleSend<span class="params">()</span> &gt; <span class="number">1000</span>)</span> ? <span class="number">1000</span> : <span class="number">0</span>)</span>;</span><br><span class="line">    <span class="comment">//send a ping request either time is due or no packet sent out within MAX_SEND_PING_INTERVAL</span></span><br><span class="line">    <span class="keyword">if</span> <span class="params">(timeToNextPing &lt;= <span class="number">0</span> || clientCnxnSocket.getIdleSend<span class="params">()</span> &gt; MAX_SEND_<span class="literal">PI</span>NG_INTERVAL)</span> &#123;</span><br><span class="line">        sendPing<span class="params">()</span>;</span><br><span class="line">        clientCnxnSocket.updateLastSend<span class="params">()</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(timeToNextPing &lt; to)</span> &#123;</span><br><span class="line">            to = timeToNextPing;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// If we are in read-only mode, seek for read/write server</span></span><br><span class="line"><span class="keyword">if</span> <span class="params">(state == States.CONNECTEDREADONLY)</span> &#123;</span><br><span class="line">    long now = System.currentTimeMillis<span class="params">()</span>;</span><br><span class="line">    int idlePingRwServer = <span class="params">(int)</span> <span class="params">(now - lastPingRwServer)</span>;</span><br><span class="line">    <span class="keyword">if</span> <span class="params">(idlePingRwServer &gt;= pingRwTimeout)</span> &#123;</span><br><span class="line">        lastPingRwServer = now;</span><br><span class="line">        idlePingRwServer = <span class="number">0</span>;</span><br><span class="line">        pingRwTimeout =</span><br><span class="line">            Math.<span class="built_in">min</span><span class="params">(<span class="number">2</span>*pingRwTimeout, maxPingRwTimeout)</span>;</span><br><span class="line">        pingRwServer<span class="params">()</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    to = Math.<span class="built_in">min</span><span class="params">(to, pingRwTimeout - idlePingRwServer)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>将任务队列中的任务发送到zk server端</li>
-</ul>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">clientCnxnSocket</span><span class="class">.doTransport</span>(<span class="tag">to</span>, <span class="tag">pendingQueue</span>, <span class="tag">outgoingQueue</span>, <span class="tag">ClientCnxn</span><span class="class">.this</span>);</span><br></pre></td></tr></table></figure>
-<ul>
-<li>接收从zk server端返回的响应，并将响应事件加入到EventThread线程的任务队列中，并记录事务id<figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line">void readResponse<span class="params">(ByteBuffer incomingBuffer)</span> throws IOException &#123;</span><br><span class="line">    ByteBufferInputStream bbis = new ByteBufferInputStream<span class="params">(</span><br><span class="line">            incomingBuffer)</span>;</span><br><span class="line">    BinaryInputArchive bbia = BinaryInputArchive.getArchive<span class="params">(bbis)</span>;</span><br><span class="line">    ReplyHeader replyHdr = new ReplyHeader<span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    replyHdr.deserialize<span class="params">(bbia, <span class="string">"header"</span>)</span>;</span><br><span class="line">    <span class="keyword">if</span> <span class="params">(replyHdr.getXid<span class="params">()</span> == -<span class="number">2</span>)</span> &#123;</span><br><span class="line">        <span class="comment">// -2 is the xid for pings</span></span><br><span class="line">        <span class="keyword">if</span> <span class="params">(LOG.isDebugEnabled<span class="params">()</span>)</span> &#123;</span><br><span class="line">            LOG.debug<span class="params">(<span class="string">"Got ping response for sessionid: 0x"</span></span><br><span class="line">                    + Long.toHexString<span class="params">(sessionId)</span></span><br><span class="line">                    + <span class="string">" after "</span></span><br><span class="line">                    + <span class="params">(<span class="params">(System.nanoTime<span class="params">()</span> - lastPingSentNs)</span> / <span class="number">1000000</span>)</span></span><br><span class="line">                    + <span class="string">"ms"</span>)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="params">(replyHdr.getXid<span class="params">()</span> == -<span class="number">4</span>)</span> &#123;</span><br><span class="line">        <span class="comment">// -4 is the xid for AuthPacket               </span></span><br><span class="line">        <span class="keyword">if</span><span class="params">(replyHdr.getErr<span class="params">()</span> == KeeperException.Code.AUTHFAILED.intValue<span class="params">()</span>)</span> &#123;</span><br><span class="line">            state = States.AUTH_FAILED;                    </span><br><span class="line">            eventThread.queueEvent<span class="params">( new WatchedEvent<span class="params">(Watcher.Event.EventType.None, </span><br><span class="line">                    Watcher.Event.KeeperState.AuthFailed, null)</span> )</span>;            		            		</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(LOG.isDebugEnabled<span class="params">()</span>)</span> &#123;</span><br><span class="line">            LOG.debug<span class="params">(<span class="string">"Got auth sessionid:0x"</span></span><br><span class="line">                    + Long.toHexString<span class="params">(sessionId)</span>)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="params">(replyHdr.getXid<span class="params">()</span> == -<span class="number">1</span>)</span> &#123;</span><br><span class="line">        <span class="comment">// -1 means notification</span></span><br><span class="line">        <span class="keyword">if</span> <span class="params">(LOG.isDebugEnabled<span class="params">()</span>)</span> &#123;</span><br><span class="line">            LOG.debug<span class="params">(<span class="string">"Got notification sessionid:0x"</span></span><br><span class="line">                + Long.toHexString<span class="params">(sessionId)</span>)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        WatcherEvent event = new WatcherEvent<span class="params">()</span>;</span><br><span class="line">        event.deserialize<span class="params">(bbia, <span class="string">"response"</span>)</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// convert from a server path to a client path</span></span><br><span class="line">        <span class="keyword">if</span> <span class="params">(chrootPath != null)</span> &#123;</span><br><span class="line">            String serverPath = event.getPath<span class="params">()</span>;</span><br><span class="line">            <span class="keyword">if</span><span class="params">(serverPath.compareTo<span class="params">(chrootPath)</span>==<span class="number">0</span>)</span></span><br><span class="line">                event.setPath<span class="params">(<span class="string">"/"</span>)</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(serverPath.length<span class="params">()</span> &gt; chrootPath.length<span class="params">()</span>)</span></span><br><span class="line">                event.setPath<span class="params">(serverPath.substring<span class="params">(chrootPath.length<span class="params">()</span>)</span>)</span>;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">            	LOG.warn<span class="params">(<span class="string">"Got server path "</span> + event.getPath<span class="params">()</span></span><br><span class="line">            			+ <span class="string">" which is too short for chroot path "</span></span><br><span class="line">            			+ chrootPath)</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        WatchedEvent we = new WatchedEvent<span class="params">(event)</span>;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(LOG.isDebugEnabled<span class="params">()</span>)</span> &#123;</span><br><span class="line">            LOG.debug<span class="params">(<span class="string">"Got "</span> + we + <span class="string">" for sessionid 0x"</span></span><br><span class="line">                    + Long.toHexString<span class="params">(sessionId)</span>)</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        eventThread.queueEvent<span class="params">( we )</span>;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If SASL authentication is currently in progress, construct and</span></span><br><span class="line">    <span class="comment">// send a response packet immediately, rather than queuing a</span></span><br><span class="line">    <span class="comment">// response as with other packets.</span></span><br><span class="line">    <span class="keyword">if</span> <span class="params">(clientTunneledAuthenticationInProgress<span class="params">()</span>)</span> &#123;</span><br><span class="line">        GetSASLRequest request = new GetSASLRequest<span class="params">()</span>;</span><br><span class="line">        request.deserialize<span class="params">(bbia,<span class="string">"token"</span>)</span>;</span><br><span class="line">        zooKeeperSaslClient.respondToServer<span class="params">(request.getToken<span class="params">()</span>,</span><br><span class="line">          ClientCnxn.this)</span>;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Packet packet;</span><br><span class="line">    synchronized <span class="params">(pendingQueue)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(pendingQueue.size<span class="params">()</span> == <span class="number">0</span>)</span> &#123;</span><br><span class="line">            throw new IOException<span class="params">(<span class="string">"Nothing in the queue, but got "</span></span><br><span class="line">                    + replyHdr.getXid<span class="params">()</span>)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        packet = pendingQueue.remove<span class="params">()</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">     * Since requests are processed in order, we better get a response</span><br><span class="line">     * to the first request!</span><br><span class="line">     */</span></span><br><span class="line">    try &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(packet.requestHeader.getXid<span class="params">()</span> != replyHdr.getXid<span class="params">()</span>)</span> &#123;</span><br><span class="line">            packet.replyHeader.setErr<span class="params">(</span><br><span class="line">                    KeeperException.Code.CONNECTIONLOSS.intValue<span class="params">()</span>)</span>;</span><br><span class="line">            throw new IOException<span class="params">(<span class="string">"Xid out of order. Got Xid "</span></span><br><span class="line">                    + replyHdr.getXid<span class="params">()</span> + <span class="string">" with err "</span> +</span><br><span class="line">                    + replyHdr.getErr<span class="params">()</span> +</span><br><span class="line">                    <span class="string">" expected Xid "</span></span><br><span class="line">                    + packet.requestHeader.getXid<span class="params">()</span></span><br><span class="line">                    + <span class="string">" for a packet with details: "</span></span><br><span class="line">                    + packet )</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        packet.replyHeader.setXid<span class="params">(replyHdr.getXid<span class="params">()</span>)</span>;</span><br><span class="line">        packet.replyHeader.setErr<span class="params">(replyHdr.getErr<span class="params">()</span>)</span>;</span><br><span class="line">        packet.replyHeader.setZxid<span class="params">(replyHdr.getZxid<span class="params">()</span>)</span>;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(replyHdr.getZxid<span class="params">()</span> &gt; <span class="number">0</span>)</span> &#123;</span><br><span class="line">            lastZxid = replyHdr.getZxid<span class="params">()</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(packet.response != null &amp;&amp; replyHdr.getErr<span class="params">()</span> == <span class="number">0</span>)</span> &#123;</span><br><span class="line">            packet.response.deserialize<span class="params">(bbia, <span class="string">"response"</span>)</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="params">(LOG.isDebugEnabled<span class="params">()</span>)</span> &#123;</span><br><span class="line">            LOG.debug<span class="params">(<span class="string">"Reading reply sessionid:0x"</span></span><br><span class="line">                    + Long.toHexString<span class="params">(sessionId)</span> + <span class="string">", packet:: "</span> + packet)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        finishPacket<span class="params">(packet)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><blockquote>EventThread响应事件处理类</blockquote><br>EventThread类负责实例化Watcher回调。每一种操作都有对应的事件回调接口，zk客户端代码会分别进行处理。<br><figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line">private void processEvent<span class="params">(Object event)</span> &#123;</span><br><span class="line">	try &#123;</span><br><span class="line">	  <span class="keyword">if</span> <span class="params">(event instanceof WatcherSetEventPair)</span> &#123;</span><br><span class="line">	      <span class="comment">// each watcher will process the event</span></span><br><span class="line">	      WatcherSetEventPair pair = <span class="params">(WatcherSetEventPair)</span> event;</span><br><span class="line">	      <span class="keyword">for</span> <span class="params">(Watcher watcher : pair.watchers)</span> &#123;</span><br><span class="line">	          try &#123;</span><br><span class="line">	              watcher.process<span class="params">(pair.event)</span>;</span><br><span class="line">	          &#125; catch <span class="params">(Throwable t)</span> &#123;</span><br><span class="line">	              LOG.error<span class="params">(<span class="string">"Error while calling watcher "</span>, t)</span>;</span><br><span class="line">	          &#125;</span><br><span class="line">	      &#125;</span><br><span class="line">	  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	      Packet p = <span class="params">(Packet)</span> event;</span><br><span class="line">	      int rc = <span class="number">0</span>;</span><br><span class="line">	      String clientPath = p.clientPath;</span><br><span class="line">	      <span class="keyword">if</span> <span class="params">(p.replyHeader.getErr<span class="params">()</span> != <span class="number">0</span>)</span> &#123;</span><br><span class="line">	          rc = p.replyHeader.getErr<span class="params">()</span>;</span><br><span class="line">	      &#125;</span><br><span class="line">	      <span class="keyword">if</span> <span class="params">(p.cb == null)</span> &#123;</span><br><span class="line">	          LOG.warn<span class="params">(<span class="string">"Somehow a null cb got to EventThread!"</span>)</span>;</span><br><span class="line">	      &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(p.response instanceof ExistsResponse</span><br><span class="line">	              || p.response instanceof SetDataResponse</span><br><span class="line">	              || p.response instanceof SetACLResponse)</span> &#123;</span><br><span class="line">	          StatCallback cb = <span class="params">(StatCallback)</span> p.cb;</span><br><span class="line">	          <span class="keyword">if</span> <span class="params">(rc == <span class="number">0</span>)</span> &#123;</span><br><span class="line">	              <span class="keyword">if</span> <span class="params">(p.response instanceof ExistsResponse)</span> &#123;</span><br><span class="line">	            	  <span class="comment">// 调用client传入的callback实现类实现的processResult方法</span></span><br><span class="line">	                  cb.processResult<span class="params">(rc, clientPath, p.ctx,</span><br><span class="line">	                          <span class="params">(<span class="params">(ExistsResponse)</span> p.response)</span></span><br><span class="line">	                                  .getStat<span class="params">()</span>)</span>;</span><br><span class="line">	              &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(p.response instanceof SetDataResponse)</span> &#123;</span><br><span class="line">	                  cb.processResult<span class="params">(rc, clientPath, p.ctx,</span><br><span class="line">	                          <span class="params">(<span class="params">(SetDataResponse)</span> p.response)</span></span><br><span class="line">	                                  .getStat<span class="params">()</span>)</span>;</span><br><span class="line">	              &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(p.response instanceof SetACLResponse)</span> &#123;</span><br><span class="line">	                  cb.processResult<span class="params">(rc, clientPath, p.ctx,</span><br><span class="line">	                          <span class="params">(<span class="params">(SetACLResponse)</span> p.response)</span></span><br><span class="line">	                                  .getStat<span class="params">()</span>)</span>;</span><br><span class="line">	              &#125;</span><br><span class="line">	          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx, null)</span>;</span><br><span class="line">	          &#125;</span><br><span class="line">	      &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(p.response instanceof GetDataResponse)</span> &#123;</span><br><span class="line">	          DataCallback cb = <span class="params">(DataCallback)</span> p.cb;</span><br><span class="line">	          GetDataResponse rsp = <span class="params">(GetDataResponse)</span> p.response;</span><br><span class="line">	          <span class="keyword">if</span> <span class="params">(rc == <span class="number">0</span>)</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx, rsp</span><br><span class="line">	                      .getData<span class="params">()</span>, rsp.getStat<span class="params">()</span>)</span>;</span><br><span class="line">	          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx, null,</span><br><span class="line">	                      null)</span>;</span><br><span class="line">	          &#125;</span><br><span class="line">	      &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(p.response instanceof GetACLResponse)</span> &#123;</span><br><span class="line">	          ACLCallback cb = <span class="params">(ACLCallback)</span> p.cb;</span><br><span class="line">	          GetACLResponse rsp = <span class="params">(GetACLResponse)</span> p.response;</span><br><span class="line">	          <span class="keyword">if</span> <span class="params">(rc == <span class="number">0</span>)</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx, rsp</span><br><span class="line">	                      .getAcl<span class="params">()</span>, rsp.getStat<span class="params">()</span>)</span>;</span><br><span class="line">	          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx, null,</span><br><span class="line">	                      null)</span>;</span><br><span class="line">	          &#125;</span><br><span class="line">	      &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(p.response instanceof GetChildrenResponse)</span> &#123;</span><br><span class="line">	          ChildrenCallback cb = <span class="params">(ChildrenCallback)</span> p.cb;</span><br><span class="line">	          GetChildrenResponse rsp = <span class="params">(GetChildrenResponse)</span> p.response;</span><br><span class="line">	          <span class="keyword">if</span> <span class="params">(rc == <span class="number">0</span>)</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx, rsp</span><br><span class="line">	                      .getChildren<span class="params">()</span>)</span>;</span><br><span class="line">	          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx, null)</span>;</span><br><span class="line">	          &#125;</span><br><span class="line">	      &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(p.response instanceof GetChildren2Response)</span> &#123;</span><br><span class="line">	          Children2Callback cb = <span class="params">(Children2Callback)</span> p.cb;</span><br><span class="line">	          GetChildren2Response rsp = <span class="params">(GetChildren2Response)</span> p.response;</span><br><span class="line">	          <span class="keyword">if</span> <span class="params">(rc == <span class="number">0</span>)</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx, rsp</span><br><span class="line">	                      .getChildren<span class="params">()</span>, rsp.getStat<span class="params">()</span>)</span>;</span><br><span class="line">	          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx, null, null)</span>;</span><br><span class="line">	          &#125;</span><br><span class="line">	      &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(p.response instanceof CreateResponse)</span> &#123;</span><br><span class="line">	          StringCallback cb = <span class="params">(StringCallback)</span> p.cb;</span><br><span class="line">	          CreateResponse rsp = <span class="params">(CreateResponse)</span> p.response;</span><br><span class="line">	          <span class="keyword">if</span> <span class="params">(rc == <span class="number">0</span>)</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx,</span><br><span class="line">	                      <span class="params">(chrootPath == null</span><br><span class="line">	                              ? rsp.getPath<span class="params">()</span></span><br><span class="line">	                              : rsp.getPath<span class="params">()</span></span><br><span class="line">	                        .substring<span class="params">(chrootPath.length<span class="params">()</span>)</span>)</span>)</span>;</span><br><span class="line">	          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	              cb.processResult<span class="params">(rc, clientPath, p.ctx, null)</span>;</span><br><span class="line">	          &#125;</span><br><span class="line">	      &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(p.cb instanceof VoidCallback)</span> &#123;</span><br><span class="line">	          VoidCallback cb = <span class="params">(VoidCallback)</span> p.cb;</span><br><span class="line">	          cb.processResult<span class="params">(rc, clientPath, p.ctx)</span>;</span><br><span class="line">	      &#125;</span><br><span class="line">	  &#125;</span><br><span class="line">	&#125; catch <span class="params">(Throwable t)</span> &#123;</span><br><span class="line">	  LOG.error<span class="params">(<span class="string">"Caught unexpected throwable"</span>, t)</span>;</span><br><span class="line">	&#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-ZooKeeper源码阅读——server启动过程（一）" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/24/ZooKeeper源码阅读——server启动过程（一）/" class="article-date">
-  	<time datetime="2015-07-23T16:07:47.000Z" itemprop="datePublished">2015-07-24</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/24/ZooKeeper源码阅读——server启动过程（一）/">ZooKeeper源码阅读——server启动过程（一）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
-<h2 id=""> </h2>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-eclipse导入zookeeper源码" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/23/eclipse导入zookeeper源码/" class="article-date">
-  	<time datetime="2015-07-23T09:35:50.000Z" itemprop="datePublished">2015-07-23</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/23/eclipse导入zookeeper源码/">eclipse导入zookeeper源码(一)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>&emsp;&emsp;由于之前项目中用到dubbo，使用zookeeper做注册中心，一直想抽时间学习zookeeper，最近终于抽出时间学习zk的使用和原理。在此推荐倪掌柜的《从Paxos到ZooKeeper分布式一致性原理与实践》。<br>&emsp;&emsp;废话不多说，直奔主题。</p>
-<h2 id="一、搭建ant编译环境">一、搭建ant编译环境</h2><ol>
-<li><a href="http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html">下载jdk</a>并安装。</li>
-</ol>
-<ul>
-<li>配置jdk环境变量：<br>&emsp;我的电脑-&gt;高级系统设置-&gt;环境变量-&gt;新建<br>&emsp;<img src="/img/java_home.jpg"/><br>&emsp;编辑PATH，追加%JAVA_HOME%\bin<br>&emsp;<img src="/img/path.jpg"/><br>&emsp;进入命令行窗口，执行java -version命令。<br>&emsp;<img src="/img/java_version.jpg"/></li>
-</ul>
-<ol>
-<li><a href="http://ant.apache.org/">下载ant</a>并安装，配置ant环境变量。</li>
-</ol>
-<ul>
-<li>配置ant环境变量<br>&emsp;我的电脑-&gt;高级系统设置-&gt;环境变量-&gt;新建<br>&emsp;<img src="/img/ant_home.jpg"/><br>&emsp;进入命令行窗口，执行ant -version<br>&emsp;<img src="/img/ant_version.jpg"/>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2015/07/23/eclipse导入zookeeper源码/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>

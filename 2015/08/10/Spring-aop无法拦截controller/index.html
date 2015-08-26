@@ -3,21 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Spring aop无法拦截controller | Techies | 优雅前行</title>
+  <title>Spring aop无法拦截Controller | Techies | 优雅前行</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="&amp;emsp;&amp;emsp;今天在已有项目中开发一个spring面向切面的功能，发现切面在Controller中不生效，经查，是由于把配置在了applicationContext.xml配置文件中了。如果需要切面在Controller中生效，需要在mvc.xml配置文件中增加。
-1234567891011121314import java.lang.annotation.*;/** * @auth z">
+  <meta name="description" content="&amp;emsp;&amp;emsp;今天在已有项目中开发一个spring面向切面的功能，发现切面在Controller中不生效，经查，是由于把aop:aspectj-autoproxy配置在了applicationContext.xml配置文件中了。如果需要切面在Controller中生效，需要在mvc.xml配置文件中增加aop:aspectj-autoproxy proxy-target-class=”t">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spring aop无法拦截controller">
+<meta property="og:title" content="Spring aop无法拦截Controller">
 <meta property="og:url" content="http://yoursite.com/2015/08/10/Spring-aop无法拦截controller/index.html">
 <meta property="og:site_name" content="Techies | 优雅前行">
-<meta property="og:description" content="&amp;emsp;&amp;emsp;今天在已有项目中开发一个spring面向切面的功能，发现切面在Controller中不生效，经查，是由于把配置在了applicationContext.xml配置文件中了。如果需要切面在Controller中生效，需要在mvc.xml配置文件中增加。
-1234567891011121314import java.lang.annotation.*;/** * @auth z">
-<meta property="og:updated_time" content="2015-08-10T13:27:41.707Z">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;今天在已有项目中开发一个spring面向切面的功能，发现切面在Controller中不生效，经查，是由于把aop:aspectj-autoproxy配置在了applicationContext.xml配置文件中了。如果需要切面在Controller中生效，需要在mvc.xml配置文件中增加aop:aspectj-autoproxy proxy-target-class=”t">
+<meta property="og:updated_time" content="2015-08-10T13:36:39.140Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Spring aop无法拦截controller">
-<meta name="twitter:description" content="&amp;emsp;&amp;emsp;今天在已有项目中开发一个spring面向切面的功能，发现切面在Controller中不生效，经查，是由于把配置在了applicationContext.xml配置文件中了。如果需要切面在Controller中生效，需要在mvc.xml配置文件中增加。
-1234567891011121314import java.lang.annotation.*;/** * @auth z">
+<meta name="twitter:title" content="Spring aop无法拦截Controller">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;今天在已有项目中开发一个spring面向切面的功能，发现切面在Controller中不生效，经查，是由于把aop:aspectj-autoproxy配置在了applicationContext.xml配置文件中了。如果需要切面在Controller中生效，需要在mvc.xml配置文件中增加aop:aspectj-autoproxy proxy-target-class=”t">
   
     <link rel="alternative" href="/atom.xml" title="Techies | 优雅前行" type="application/atom+xml">
   
@@ -116,7 +113,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/AOP/" style="font-size: 10px;">AOP</a> <a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
+						<a href="/tags/AOP/" style="font-size: 13.33px;">AOP</a> <a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/Spring/" style="font-size: 13.33px;">Spring</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
 					</div>
 				</section>
 				
@@ -205,7 +202,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Spring aop无法拦截controller
+      Spring aop无法拦截Controller
     </h1>
   
 
@@ -225,7 +222,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>&emsp;&emsp;今天在已有项目中开发一个spring面向切面的功能，发现切面在Controller中不生效，经查，是由于把<aop:aspectj-autoproxy>配置在了applicationContext.xml配置文件中了。如果需要切面在Controller中生效，需要在mvc.xml配置文件中增加<aop:aspectj-autoproxy proxy-target-class="true">。</aop:aspectj-autoproxy></aop:aspectj-autoproxy></p>
+        <p>&emsp;&emsp;今天在已有项目中开发一个spring面向切面的功能，发现切面在Controller中不生效，经查，是由于把aop:aspectj-autoproxy配置在了applicationContext.xml配置文件中了。如果需要切面在Controller中生效，需要在mvc.xml配置文件中增加aop:aspectj-autoproxy proxy-target-class=”true”。</p>
 <figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import java.lang.annotation.<span class="keyword">*</span>;</span><br><span class="line"></span><br><span class="line">/<span class="keyword">*</span><span class="keyword">*</span></span><br><span class="line"> <span class="keyword">*</span> <span class="comment">@auth zhengzhi.ren</span></span><br><span class="line"> <span class="keyword">*</span> <span class="comment">@date 2015/8/10.</span></span><br><span class="line"> <span class="keyword">*</span>/</span><br><span class="line"></span><br><span class="line"><span class="comment">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="comment">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="comment">@Inherited</span></span><br><span class="line"><span class="comment">@Documented</span></span><br><span class="line">public <span class="comment">@interface LoginRequired &#123;</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.aspectj.lang.JoinPoint;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Aspect;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Before;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Pointcut;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * <span class="doctag">@auth</span> zhengzhi.ren</span><br><span class="line"> * <span class="doctag">@date</span> 2015/8/10.</span><br><span class="line"> */</span></span><br><span class="line"><span class="annotation">@Component</span></span><br><span class="line"><span class="annotation">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginCheckAspect</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Pointcut</span>(<span class="string">"@annotation(com.xxx.LoginRequired)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">annotation</span> <span class="params">()</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Before</span>(<span class="string">"annotation ()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">(JoinPoint joinPoint)</span> <span class="keyword">throws</span> Throwable</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"....."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>spring mvc.xml配置文件中增加：</p>
@@ -237,6 +234,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2015/08/11/Spring拦截器切面配置/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Spring拦截器切面配置
+        
+      </div>
+    </a>
   
   
     <a href="/2015/08/06/Java算法之找出数组中的奇数/" id="article-nav-older" class="article-nav-link-wrap">
@@ -269,7 +275,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="Spring-aop无法拦截controller" data-title="Spring aop无法拦截controller" data-url="http://yoursite.com/2015/08/10/Spring-aop无法拦截controller/"></div>
+	<div class="ds-thread" data-thread-key="Spring-aop无法拦截controller" data-title="Spring aop无法拦截Controller" data-url="http://yoursite.com/2015/08/10/Spring-aop无法拦截controller/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

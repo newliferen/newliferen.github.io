@@ -3,24 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Java算法之找出数组中的奇数 | Techies | 优雅前行</title>
+  <title>ZooKeeper源码阅读——server（一） | Techies | 优雅前行</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
-
-问题描述：给定一个整型数组，写一个算法，找出其中所有的奇数。Java实现：数组的每个元素和1进行&amp;amp;运算，结果是1表示该元素为奇数，结果是0表示该元素是偶数。1234567891011121314151617/** * @auth zhengzhi.ren * @date 2015/8/6. */pub">
+  <meta name="description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java算法之找出数组中的奇数">
-<meta property="og:url" content="http://yoursite.com/2015/08/06/Java算法之找出数组中的奇数/index.html">
+<meta property="og:title" content="ZooKeeper源码阅读——server（一）">
+<meta property="og:url" content="http://yoursite.com/2015/08/26/ZooKeeper源码阅读——server（一）/index.html">
 <meta property="og:site_name" content="Techies | 优雅前行">
-<meta property="og:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
-
-问题描述：给定一个整型数组，写一个算法，找出其中所有的奇数。Java实现：数组的每个元素和1进行&amp;amp;运算，结果是1表示该元素为奇数，结果是0表示该元素是偶数。1234567891011121314151617/** * @auth zhengzhi.ren * @date 2015/8/6. */pub">
-<meta property="og:updated_time" content="2015-08-07T14:55:51.404Z">
+<meta property="og:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/">
+<meta property="og:updated_time" content="2015-08-26T14:45:00.378Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java算法之找出数组中的奇数">
-<meta name="twitter:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
-
-问题描述：给定一个整型数组，写一个算法，找出其中所有的奇数。Java实现：数组的每个元素和1进行&amp;amp;运算，结果是1表示该元素为奇数，结果是0表示该元素是偶数。1234567891011121314151617/** * @auth zhengzhi.ren * @date 2015/8/6. */pub">
+<meta name="twitter:title" content="ZooKeeper源码阅读——server（一）">
+<meta name="twitter:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/">
   
     <link rel="alternative" href="/atom.xml" title="Techies | 优雅前行" type="application/atom+xml">
   
@@ -191,11 +185,11 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-Java算法之找出数组中的奇数" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-ZooKeeper源码阅读——server（一）" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/08/06/Java算法之找出数组中的奇数/" class="article-date">
-  	<time datetime="2015-08-06T11:07:02.000Z" itemprop="datePublished">2015-08-06</time>
+      <a href="/2015/08/26/ZooKeeper源码阅读——server（一）/" class="article-date">
+  	<time datetime="2015-08-26T14:44:26.000Z" itemprop="datePublished">2015-08-26</time>
 </a>
     </div>
   
@@ -208,7 +202,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Java算法之找出数组中的奇数
+      ZooKeeper源码阅读——server（一）
     </h1>
   
 
@@ -217,7 +211,7 @@
       <div class="article-info article-info-post">
         
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
 	</div>
 
         
@@ -228,11 +222,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font>
-
-<p>问题描述：给定一个整型数组，写一个算法，找出其中所有的奇数。<br>Java实现：数组的每个元素和1进行&amp;运算，结果是1表示该元素为奇数，结果是0表示该元素是偶数。<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * @auth zhengzhi.ren</span><br><span class="line"> * @date 2015/8/6.</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">FindOdd</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(<span class="params">String[] args</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 找出数组中所有奇数</span></span><br><span class="line">        <span class="keyword">int</span>[] arr = &#123;<span class="number">21</span>,<span class="number">23</span>,<span class="number">12</span>,<span class="number">33</span>,<span class="number">1</span>,<span class="number">5</span>,<span class="number">9</span>&#125;;</span><br><span class="line">        <span class="keyword">int</span> len = arr.length;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((arr[i] &amp; <span class="number">1</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                System.<span class="keyword">out</span>.println(<span class="string">"第"</span> + i + <span class="string">"个数字是奇数， 值："</span> + arr[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>该算法时间复杂度是n，n为数组的长度。</p>
-
+        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
+<h2 id=""> </h2>
       
     </div>
     
@@ -241,18 +232,18 @@
     
 <nav id="article-nav">
   
-    <a href="/2015/08/10/Spring-aop无法拦截controller/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/08/26/ZooKeeper源码阅读——debug-client命令/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          Spring aop无法拦截Controller
+          ZooKeeper源码阅读——debug client命令
         
       </div>
     </a>
   
   
-    <a href="/2015/08/06/Java算法之单身汉/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Java算法之单身汉</div>
+    <a href="/2015/08/11/Spring拦截器切面配置/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Spring拦截器切面配置</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -281,7 +272,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="Java算法之找出数组中的奇数" data-title="Java算法之找出数组中的奇数" data-url="http://yoursite.com/2015/08/06/Java算法之找出数组中的奇数/"></div>
+	<div class="ds-thread" data-thread-key="ZooKeeper源码阅读——server（一）" data-title="ZooKeeper源码阅读——server（一）" data-url="http://yoursite.com/2015/08/26/ZooKeeper源码阅读——server（一）/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

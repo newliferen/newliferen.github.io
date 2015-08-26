@@ -3,18 +3,24 @@
 <head>
   <meta charset="utf-8">
   
-  <title>ZooKeeper源码阅读——server启动过程（一） | Techies | 优雅前行</title>
+  <title>Spring拦截器切面配置 | Techies | 优雅前行</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/">
+  <meta name="description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
+
+&amp;emsp;&amp;emsp;本文记录重点不是spring拦截器的配置方式，而是使用spring aop切面注解方式代替传统的在spring mvc配置文件中配置mvc:interceptor方法。这种传统方式配置起来比较灵活，修改配置后重启系统即可，不需要重新发布到线上，缺点是配置较臃肿，如果请求路径无法使用通配">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ZooKeeper源码阅读——server启动过程（一）">
-<meta property="og:url" content="http://yoursite.com/2015/07/24/ZooKeeper源码阅读——server启动过程（一）/index.html">
+<meta property="og:title" content="Spring拦截器切面配置">
+<meta property="og:url" content="http://yoursite.com/2015/08/11/Spring拦截器切面配置/index.html">
 <meta property="og:site_name" content="Techies | 优雅前行">
-<meta property="og:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/">
-<meta property="og:updated_time" content="2015-08-07T14:52:11.528Z">
+<meta property="og:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
+
+&amp;emsp;&amp;emsp;本文记录重点不是spring拦截器的配置方式，而是使用spring aop切面注解方式代替传统的在spring mvc配置文件中配置mvc:interceptor方法。这种传统方式配置起来比较灵活，修改配置后重启系统即可，不需要重新发布到线上，缺点是配置较臃肿，如果请求路径无法使用通配">
+<meta property="og:updated_time" content="2015-08-11T06:43:35.109Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ZooKeeper源码阅读——server启动过程（一）">
-<meta name="twitter:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/">
+<meta name="twitter:title" content="Spring拦截器切面配置">
+<meta name="twitter:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
+
+&amp;emsp;&amp;emsp;本文记录重点不是spring拦截器的配置方式，而是使用spring aop切面注解方式代替传统的在spring mvc配置文件中配置mvc:interceptor方法。这种传统方式配置起来比较灵活，修改配置后重启系统即可，不需要重新发布到线上，缺点是配置较臃肿，如果请求路径无法使用通配">
   
     <link rel="alternative" href="/atom.xml" title="Techies | 优雅前行" type="application/atom+xml">
   
@@ -113,7 +119,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/AOP/" style="font-size: 10px;">AOP</a> <a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
+						<a href="/tags/AOP/" style="font-size: 13.33px;">AOP</a> <a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/Spring/" style="font-size: 13.33px;">Spring</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
 					</div>
 				</section>
 				
@@ -185,11 +191,11 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-ZooKeeper源码阅读——server启动过程（一）" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-Spring拦截器切面配置" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/07/24/ZooKeeper源码阅读——server启动过程（一）/" class="article-date">
-  	<time datetime="2015-07-23T16:07:47.000Z" itemprop="datePublished">2015-07-24</time>
+      <a href="/2015/08/11/Spring拦截器切面配置/" class="article-date">
+  	<time datetime="2015-08-11T06:38:50.000Z" itemprop="datePublished">2015-08-11</time>
 </a>
     </div>
   
@@ -202,7 +208,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      ZooKeeper源码阅读——server启动过程（一）
+      Spring拦截器切面配置
     </h1>
   
 
@@ -211,7 +217,7 @@
       <div class="article-info article-info-post">
         
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AOP/">AOP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
 	</div>
 
         
@@ -222,8 +228,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
-<h2 id=""> </h2>
+        <font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font>
+
+<p>&emsp;&emsp;本文记录重点不是spring拦截器的配置方式，而是使用spring aop切面注解方式代替传统的在spring mvc配置文件中配置mvc:interceptor方法。这种传统方式配置起来比较灵活，修改配置后重启系统即可，不需要重新发布到线上，缺点是配置较臃肿，如果请求路径无法使用通配符，那么每个路径都需要在拦截器的配置中写一遍，但是使用切面配置的方式，代码相对优雅很多。</p>
+
       
     </div>
     
@@ -232,18 +240,18 @@
     
 <nav id="article-nav">
   
-    <a href="/2015/07/24/ZooKeeper源码阅读——client（二）/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/08/26/ZooKeeper源码阅读——server（一）/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          ZooKeeper源码阅读——client（二）
+          ZooKeeper源码阅读——server（一）
         
       </div>
     </a>
   
   
-    <a href="/2015/07/23/eclipse导入zookeeper源码/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">eclipse导入zookeeper源码(一)</div>
+    <a href="/2015/08/10/Spring-aop无法拦截controller/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Spring aop无法拦截Controller</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -272,7 +280,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="ZooKeeper源码阅读——server启动过程（一）" data-title="ZooKeeper源码阅读——server启动过程（一）" data-url="http://yoursite.com/2015/07/24/ZooKeeper源码阅读——server启动过程（一）/"></div>
+	<div class="ds-thread" data-thread-key="Spring拦截器切面配置" data-title="Spring拦截器切面配置" data-url="http://yoursite.com/2015/08/11/Spring拦截器切面配置/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

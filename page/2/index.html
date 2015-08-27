@@ -186,6 +186,65 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-ZooKeeper应用之分布式锁" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/07/27/ZooKeeper应用之分布式锁/" class="article-date">
+  	<time datetime="2015-07-27T12:30:01.000Z" itemprop="datePublished">2015-07-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/27/ZooKeeper应用之分布式锁/">ZooKeeper应用之分布式锁</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font>
+
+<p>&emsp;&emsp;目前Java运行环境中多数都是集群环境，多台主机并行计算，导致在代码中很难进行并发控制，有开发人员自行实现分布式锁，开发工作量大，代码稳定性难以保证，ZooKeeper框架的出现，让开发人员可以使用zk中成熟的分布式锁服务，减轻了开发人员对分布式任务并发控制负担，可以专注业务逻辑实现。<br>&emsp;&emsp;zk中分布式锁的思想是，创建一个锁节点/<em>locknode</em>/guid-lock，集群中每台服务器都在该节点下写入有序的子节点，节点列表中第一个节点对应的服务器被认为是拿到分布式锁，可以进行计算任务，计算任务结束后，删除该服务器对应的节点，下一个服务器写入的节点排到了第一位，可以进行计算任务，如此往复，每台机器写入的节点排在列表中第一位的时候，就被认为是拿到分布式锁。</p>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.zk.distributed.lock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.*;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.Watcher.Event.EventType;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.Watcher.Event.KeeperState;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.ZooDefs.Ids;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.data.Stat;</span><br><span class="line"><span class="keyword">import</span> org.junit.Before;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.CountDownLatch;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * 分布式锁</span><br><span class="line"> * @author renzhengzhi</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> class ZkDistributedLock &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> ZooKeeper zk;</span><br><span class="line">	</span><br><span class="line">	@Before</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> connect()&#123;</span><br><span class="line">		CountDownLatch connectorSemaphore = <span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line">		<span class="keyword">String</span> url = <span class="string">"127.0.0.1:2181"</span>;</span><br><span class="line">		<span class="built_in">int</span> timeout = <span class="number">60000</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			zk = <span class="keyword">new</span> ZooKeeper(url, timeout, <span class="keyword">new</span> ConnectWatcher(connectorSemaphore));</span><br><span class="line">			System.out.<span class="built_in">println</span>(zk.getState());</span><br><span class="line">			connectorSemaphore.await();</span><br><span class="line">			System.out.<span class="built_in">println</span>(zk.getState());</span><br><span class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span><br><span class="line">	 * 获取分布式锁</span><br><span class="line">	 */</span></span><br><span class="line">	@Test</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> getDistributedLock()&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">String</span> path = zk.create(<span class="string">"/_locknode_/guid-lock"</span>, <span class="string">"lock"</span>.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);</span><br><span class="line">			List&lt;<span class="keyword">String</span>&gt; children = zk.getChildren(<span class="string">"/_locknode_"</span>, <span class="keyword">true</span>);</span><br><span class="line">			<span class="keyword">if</span> (children != <span class="keyword">null</span> &amp;&amp; children.<span class="built_in">size</span>() &gt; <span class="number">0</span>)&#123;</span><br><span class="line">				<span class="comment">// 避免羊群效应</span></span><br><span class="line">				<span class="comment">// 首先找到比自己小的那个节点</span></span><br><span class="line">				<span class="built_in">int</span> <span class="built_in">size</span> = children.<span class="built_in">size</span>();</span><br><span class="line">				<span class="keyword">String</span> prevOne = <span class="keyword">null</span>;<span class="comment">// 上一个比自己小的节点</span></span><br><span class="line">				<span class="keyword">for</span> (<span class="built_in">int</span> i=<span class="number">0</span>;i&lt;<span class="built_in">size</span>;i++)&#123;</span><br><span class="line">					<span class="keyword">if</span> (i == <span class="number">0</span> &amp;&amp; path.lastIndexOf(children.<span class="built_in">get</span>(i)) &gt; <span class="number">0</span>)&#123;</span><br><span class="line">						System.out.<span class="built_in">println</span>(<span class="string">"当前线程获取分布式锁。。。"</span>);</span><br><span class="line">						<span class="keyword">return</span>;</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">if</span> (path.lastIndexOf(children.<span class="built_in">get</span>(i)) &gt; <span class="number">0</span>)&#123;</span><br><span class="line">						prevOne = children.<span class="built_in">get</span>(i-<span class="number">1</span>);</span><br><span class="line">						<span class="keyword">break</span>;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				System.out.<span class="built_in">println</span>(<span class="string">"prevOne:"</span> + prevOne);</span><br><span class="line">				<span class="comment">// 判断比当前节点小的节点是否存在，其节点发生变化之后会回调watcher类，即当前线程获取到分布式锁</span></span><br><span class="line">				zk.exists(<span class="string">"/_locknode_/"</span> + prevOne, <span class="keyword">new</span> LockWatcher(<span class="string">"/_locknode_"</span>));</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (KeeperException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> class LockWatcher implements Watcher &#123;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span> path;</span><br><span class="line">		<span class="keyword">public</span> LockWatcher(<span class="keyword">String</span> path)&#123;</span><br><span class="line">			<span class="keyword">this</span>.path = path;</span><br><span class="line">		&#125;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> process(WatchedEvent event) &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				Stat stat = zk.exists(path, <span class="keyword">false</span>);</span><br><span class="line">	        	System.out.<span class="built_in">println</span>(<span class="string">"当前线程获取到分布式锁"</span> + stat);</span><br><span class="line">			&#125; <span class="keyword">catch</span> (KeeperException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	class ConnectWatcher implements Watcher&#123;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">final</span> CountDownLatch connectorSemaphore;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">public</span> ConnectWatcher(CountDownLatch connectorSemaphore)&#123;</span><br><span class="line">			<span class="keyword">this</span>.connectorSemaphore = connectorSemaphore;</span><br><span class="line">		&#125;</span><br><span class="line">		@Override</span><br><span class="line">		<span class="keyword">public</span> <span class="keyword">void</span> process(WatchedEvent e) &#123;</span><br><span class="line">			<span class="keyword">if</span> (e.getState() == KeeperState.SyncConnected)&#123;</span><br><span class="line">				<span class="keyword">if</span> (EventType.None == e.getType() &amp;&amp; e.getPath() == <span class="keyword">null</span>)&#123;</span><br><span class="line">					connectorSemaphore.countDown();</span><br><span class="line">					System.out.<span class="built_in">println</span>(<span class="string">"链接状态："</span> + e.getState());</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;在使用zk实现分布式锁服务时，需要注意一点，如果服务器监听锁节点下所有子节点，那么zk集群在负责发起watcher通知时，势必给zk集群服务带来压力，而客户端关注了与自己无关的节点变化情况，也浪费了客户端服务器资源，这种情况叫做羊群效应。羊群效应的解决方案是，每个客户端服务器只关注比自己小的那个节点的变化情况即可，如果比自己小的节点被删除，那么就说明当前服务器拿到分布式锁。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
     <article id="post-Java-Web服务器负载指标" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -680,61 +739,6 @@
   
     <h1 itemprop="name">
       <a class="article-title" href="/2015/07/24/ZooKeeper源码阅读——watcher（五）/">ZooKeeper源码阅读——watcher（五）</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
-<h2 id=""> </h2>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-ZooKeeper源码阅读——整体架构（四）" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/07/24/ZooKeeper源码阅读——整体架构（四）/" class="article-date">
-  	<time datetime="2015-07-23T16:08:44.000Z" itemprop="datePublished">2015-07-24</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/07/24/ZooKeeper源码阅读——整体架构（四）/">ZooKeeper源码阅读——整体架构（四）</a>
     </h1>
   
 

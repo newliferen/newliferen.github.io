@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ZooKeeper源码阅读——揭开watcher神秘面纱 | Techies | 优雅前行</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
+ &amp;emsp;&amp;emsp;ZooKeeper客户端代码相对简单，核心的类就是ZooKeeper、HostProvider、ClientCnxn、ClientCnxnSocketNIO这几个核心类。其中ZooKeeper是客户端接口类，为客户端提供各种操作访问zk的接口方法，HostProvider持有服务器连接">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ZooKeeper源码阅读——揭开watcher神秘面纱">
+<meta property="og:url" content="http://yoursite.com/2015/08/27/ZooKeeper源码阅读——揭开watcher神秘面纱/index.html">
+<meta property="og:site_name" content="Techies | 优雅前行">
+<meta property="og:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
+ &amp;emsp;&amp;emsp;ZooKeeper客户端代码相对简单，核心的类就是ZooKeeper、HostProvider、ClientCnxn、ClientCnxnSocketNIO这几个核心类。其中ZooKeeper是客户端接口类，为客户端提供各种操作访问zk的接口方法，HostProvider持有服务器连接">
+<meta property="og:updated_time" content="2015-08-27T14:38:45.438Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ZooKeeper源码阅读——揭开watcher神秘面纱">
+<meta name="twitter:description" content="原创技术文章，转载请注明：转自http://newliferen.github.io/
+ &amp;emsp;&amp;emsp;ZooKeeper客户端代码相对简单，核心的类就是ZooKeeper、HostProvider、ClientCnxn、ClientCnxnSocketNIO这几个核心类。其中ZooKeeper是客户端接口类，为客户端提供各种操作访问zk的接口方法，HostProvider持有服务器连接">
+  
+    <link rel="alternative" href="/atom.xml" title="Techies | 优雅前行" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/img/auth.png" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Techies</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">热爱生活，热爱技术，保持热情。</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						<div class="icon-wrap icon-link hide" data-idx="2">
+							<div class="loopback_l"></div>
+							<div class="loopback_r"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						<li>友情链接</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/newliferen" title="github">github</a>
+					        
+								<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/newliferen" title="zhihu">zhihu</a>
+					        
+								<a class="mail" target="_blank" href="/renzhengzhi.cool@163.com" title="mail">mail</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/AOP/" style="font-size: 13.33px;">AOP</a> <a href="/tags/IntelliJ-IDEA/" style="font-size: 10px;">IntelliJ IDEA</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/Spring/" style="font-size: 13.33px;">Spring</a> <a href="/tags/ZooKeeper/" style="font-size: 20px;">ZooKeeper</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://my.csdn.net/renzhengzhi">CSDN博客</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://renzhengzhi.iteye.com/admin">iteye博客</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://my.oschina.net/u/870816">oschian空间</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">可以失败，但是不可以被打倒！</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Techies</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="/img/auth.png" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Techies</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">热爱生活，热爱技术，保持热情。</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/newliferen" title="github">github</a>
+			        
+						<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/newliferen" title="zhihu">zhihu</a>
+			        
+						<a class="mail" target="_blank" href="/renzhengzhi.cool@163.com" title="mail">mail</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-ZooKeeper源码阅读——揭开watcher神秘面纱" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/27/ZooKeeper源码阅读——揭开watcher神秘面纱/" class="article-date">
+  	<time datetime="2015-08-27T13:42:43.000Z" itemprop="datePublished">2015-08-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ZooKeeper源码阅读——揭开watcher神秘面纱
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><font color="#DCDCDC">原创技术文章，转载请注明：转自<a href="http://newliferen.github.io/" style="color:#DCDCDC;" target="_blank" rel="external">http://newliferen.github.io/</a></font></p>
+<h2 id=""> </h2><p>&emsp;&emsp;ZooKeeper客户端代码相对简单，核心的类就是ZooKeeper、HostProvider、ClientCnxn、ClientCnxnSocketNIO这几个核心类。其中ZooKeeper是客户端接口类，为客户端提供各种操作访问zk的接口方法，HostProvider持有服务器连接端口等信息，应用程序通过创建ZooKeeper对象建立与zk server端的socket连接，ClientCnxnSocketNIO则向socket连接读写数据。</p>
+<blockquote><b>创建ZooKeeper对象时发生了什么</b></blockquote>
+
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ZooKeeper</span><span class="params">(String connectString, <span class="keyword">int</span> sessionTimeout, Watcher watcher,</span><br><span class="line">            <span class="keyword">boolean</span> canBeReadOnly)</span></span><br><span class="line">        <span class="keyword">throws</span> IOException</span><br><span class="line"></span>&#123;</span><br><span class="line">    LOG.info(<span class="string">"Initiating client connection, connectString="</span> + connectString</span><br><span class="line">            + <span class="string">" sessionTimeout="</span> + sessionTimeout + <span class="string">" watcher="</span> + watcher);</span><br><span class="line"></span><br><span class="line">    watchManager.defaultWatcher = watcher;</span><br><span class="line"></span><br><span class="line">    ConnectStringParser connectStringParser = <span class="keyword">new</span> ConnectStringParser(</span><br><span class="line">            connectString);</span><br><span class="line">    <span class="comment">// 解析链接地址</span></span><br><span class="line">    HostProvider hostProvider = <span class="keyword">new</span> StaticHostProvider(</span><br><span class="line">            connectStringParser.getServerAddresses());</span><br><span class="line">    <span class="comment">// 创建ClientCnxn对象，其内部则是启动sendThread和eventThread两个线程，sendThread线程启动时，负责创建和zk server端的链接。</span></span><br><span class="line">    cnxn = <span class="keyword">new</span> ClientCnxn(connectStringParser.getChrootPath(),</span><br><span class="line">            hostProvider, sessionTimeout, <span class="keyword">this</span>, watchManager,</span><br><span class="line">            getClientCnxnSocket(), canBeReadOnly);</span><br><span class="line">    <span class="comment">// 启动内部的两个线程</span></span><br><span class="line">    cnxn.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote><b>ClientCnxn构造器</b></blockquote>
+
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> ClientCnxn(<span class="keyword">String</span> chrootPath, HostProvider hostProvider, <span class="built_in">int</span> sessionTimeout, ZooKeeper zooKeeper,</span><br><span class="line">            ClientWatchManager watcher, ClientCnxnSocket clientCnxnSocket,</span><br><span class="line">            <span class="keyword">long</span> sessionId, <span class="built_in">byte</span>[] sessionPasswd, <span class="built_in">boolean</span> canBeReadOnly) &#123;</span><br><span class="line">    <span class="keyword">this</span>.zooKeeper = zooKeeper;</span><br><span class="line">    <span class="keyword">this</span>.watcher = watcher;</span><br><span class="line">    <span class="keyword">this</span>.sessionId = sessionId;</span><br><span class="line">    <span class="keyword">this</span>.sessionPasswd = sessionPasswd;</span><br><span class="line">    <span class="keyword">this</span>.sessionTimeout = sessionTimeout;</span><br><span class="line">    <span class="keyword">this</span>.hostProvider = hostProvider;</span><br><span class="line">    <span class="keyword">this</span>.chrootPath = chrootPath;</span><br><span class="line"></span><br><span class="line">    connectTimeout = sessionTimeout / hostProvider.<span class="built_in">size</span>();</span><br><span class="line">    readTimeout = sessionTimeout * <span class="number">2</span> / <span class="number">3</span>;</span><br><span class="line">    readOnly = canBeReadOnly;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 创建发送请求线程</span></span><br><span class="line">    sendThread = <span class="keyword">new</span> SendThread(clientCnxnSocket);</span><br><span class="line">    <span class="comment">// 创建事件处理线程</span></span><br><span class="line">    eventThread = <span class="keyword">new</span> EventThread();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote><b>揭开ZooKeeper请求的神秘面纱</b></blockquote>
+
+<p>&emsp;&emsp;以创建节点为例，对zk客户端内部实现展开学习，在学习之前，一直在猜想zk server是如何处理客户端的watcher事件，以往的经验是发送消息，或者是在响应结果中进行回调，但是看了zk源码之后，发现zk采用了很聪明的方式处理watcher事件。每一次请求，只要是注册了watcher或者回调事件，在组织request请求对象时，都不会让watcher事件和request产生关联，并且watcher事件也不会随着request发送到zk server端，只是创建了Packet对象，将watcher事件的实现保存在Packet对象内部，在向zk server端发送请求后，将Packet对象保存到pendingQueue队列中。eventThread线程从pendingQueue队列中取出Packet对象后，封装成WatcheEvent进行回调，这样客户端的回调事件得到执行。</p>
+<p>&emsp;&emsp;在整个请求过程中，可以看出ZooKeeper的实现一直在尽一切可能减少网络传输时占用带宽，提高请求响应效率，整个过程中回调事件对zk server端是透明的，回调对server端不产生任何压力，在高并发场景中server高可用性得到进一步保障。</p>
+<ul>
+<li>创建节点入口方法</li>
+</ul>
+<figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public void create<span class="params">(final String path, byte data[], List&lt;ACL&gt; acl,</span><br><span class="line">            CreateMode createMode,  StringCallback cb, Object ctx)</span></span><br><span class="line">&#123;</span><br><span class="line">    final String clientPath = path;</span><br><span class="line">    PathUtils.validatePath<span class="params">(clientPath, createMode.isSequential<span class="params">()</span>)</span>;</span><br><span class="line"></span><br><span class="line">    final String serverPath = prependChroot<span class="params">(clientPath)</span>;</span><br><span class="line"></span><br><span class="line">    RequestHeader h = new RequestHeader<span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 设置请求类型，zk server端会根据这个类型得知客户端向进行何种操作</span></span><br><span class="line">    h.setType<span class="params">(ZooDefs.OpCode.create)</span>;</span><br><span class="line">    CreateRequest request = new CreateRequest<span class="params">()</span>;</span><br><span class="line">    CreateResponse response = new CreateResponse<span class="params">()</span>;</span><br><span class="line">    ReplyHeader r = new ReplyHeader<span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 组装请求对象，在这里可以看出zk并没有将StringCallback的实现类组织到request对象中</span></span><br><span class="line">    request.setData<span class="params">(data)</span>;</span><br><span class="line">    request.setFlags<span class="params">(createMode.toFlag<span class="params">()</span>)</span>;</span><br><span class="line">    request.setPath<span class="params">(serverPath)</span>;</span><br><span class="line">    request.setAcl<span class="params">(acl)</span>;</span><br><span class="line">    <span class="comment">// 将请求压入sendingQueue队列中</span></span><br><span class="line">    cnxn.queuePacket<span class="params">(h, r, request, response, cb, clientPath,</span><br><span class="line">            serverPath, ctx, null)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>请求对象入队</li>
+</ul>
+<figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">Packet queuePacket<span class="params">(RequestHeader h, ReplyHeader r, Record request,</span><br><span class="line">            Record response, AsyncCallback cb, String clientPath,</span><br><span class="line">            String serverPath, Object ctx, WatchRegistration watchRegistration)</span></span><br><span class="line">&#123;</span><br><span class="line">    Packet packet = null;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// <span class="doctag">Note</span> that we do not generate the Xid for the packet yet. It is</span></span><br><span class="line">    <span class="comment">// generated later at send-time, by an implementation of ClientCnxnSocket::doIO(),</span></span><br><span class="line">    <span class="comment">// where the packet is actually sent.</span></span><br><span class="line">    synchronized <span class="params">(outgoingQueue)</span> &#123;</span><br><span class="line">		<span class="comment">// 从这里可以看出request对象和cb仍然没有任何关联</span></span><br><span class="line">        packet = new Packet<span class="params">(h, r, request, response, watchRegistration)</span>;</span><br><span class="line">        packet.cb = cb;</span><br><span class="line">        packet.ctx = ctx;</span><br><span class="line">        packet.clientPath = clientPath;</span><br><span class="line">        packet.serverPath = serverPath;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(!state.isAlive<span class="params">()</span> || closing)</span> &#123;</span><br><span class="line">            conLossPacket<span class="params">(packet)</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// If the client is asking to close the session then</span></span><br><span class="line">            <span class="comment">// mark as closing</span></span><br><span class="line">            <span class="keyword">if</span> <span class="params">(h.getType<span class="params">()</span> == OpCode.closeSession)</span> &#123;</span><br><span class="line">                closing = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">			<span class="comment">// packet对象入队</span></span><br><span class="line">            outgoingQueue.add<span class="params">(packet)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    sendThread.getClientCnxnSocket<span class="params">()</span>.wakeupCnxn<span class="params">()</span>;</span><br><span class="line">    return packet;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>触发发送请求</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">clientCnxnSocket</span><span class="class">.doTransport</span>(<span class="tag">to</span>, <span class="tag">pendingQueue</span>, <span class="tag">outgoingQueue</span>, <span class="tag">ClientCnxn</span><span class="class">.this</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>发送请求阶段</li>
+</ul>
+<p>&emsp;&emsp;真正要发送到zk server端的数据，就在createBB()方法中组织的。</p>
+<figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">synchronized<span class="params">(outgoingQueue)</span> &#123;</span><br><span class="line">    Packet p = findSendablePacket<span class="params">(outgoingQueue,</span><br><span class="line">            cnxn.sendThread.clientTunneledAuthenticationInProgress<span class="params">()</span>)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="params">(p != null)</span> &#123;</span><br><span class="line">        updateLastSend<span class="params">()</span>;</span><br><span class="line">        <span class="comment">// If we already started writing p, p.bb will already exist</span></span><br><span class="line">        <span class="keyword">if</span> <span class="params">(p.bb == null)</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> <span class="params">(<span class="params">(p.requestHeader != null)</span> &amp;&amp;</span><br><span class="line">                    <span class="params">(p.requestHeader.getType<span class="params">()</span> != OpCode.ping)</span> &amp;&amp;</span><br><span class="line">                    <span class="params">(p.requestHeader.getType<span class="params">()</span> != OpCode.auth)</span>)</span> &#123;</span><br><span class="line">                p.requestHeader.setXid<span class="params">(cnxn.getXid<span class="params">()</span>)</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            p.createBB<span class="params">()</span>;</span><br><span class="line">        &#125;</span><br><span class="line">		<span class="comment">// 向socket连接写入数据</span></span><br><span class="line">        sock.write<span class="params">(p.bb)</span>;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(!p.bb.hasRemaining<span class="params">()</span>)</span> &#123;</span><br><span class="line">            sentCount++;</span><br><span class="line">            outgoingQueue.removeFirstOccurrence<span class="params">(p)</span>;</span><br><span class="line">            <span class="keyword">if</span> <span class="params">(p.requestHeader != null</span><br><span class="line">                    &amp;&amp; p.requestHeader.getType<span class="params">()</span> != OpCode.ping</span><br><span class="line">                    &amp;&amp; p.requestHeader.getType<span class="params">()</span> != OpCode.auth)</span> &#123;</span><br><span class="line">                synchronized <span class="params">(pendingQueue)</span> &#123;</span><br><span class="line">                    <span class="comment">// 将packet对象入队</span></span><br><span class="line">                    pendingQueue.add<span class="params">(p)</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="params">(outgoingQueue.isEmpty<span class="params">()</span>)</span> &#123;</span><br><span class="line">        <span class="comment">// No more packets to send: turn off write interest flag.</span></span><br><span class="line">        <span class="comment">// Will be turned on later by a later call to enableWrite(),</span></span><br><span class="line">        <span class="comment">// from within ZooKeeperSaslClient (if client is configured</span></span><br><span class="line">        <span class="comment">// to attempt SASL authentication), or in either doIO() or</span></span><br><span class="line">        <span class="comment">// in doTransport() if not.</span></span><br><span class="line">        disableWrite<span class="params">()</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(!initialized &amp;&amp; p != null &amp;&amp; !p.bb.hasRemaining<span class="params">()</span>)</span> &#123;</span><br><span class="line">        <span class="comment">// On initial connection, write the complete connect request</span></span><br><span class="line">        <span class="comment">// packet, but then disable further writes until after</span></span><br><span class="line">        <span class="comment">// receiving a successful connection response.  If the</span></span><br><span class="line">        <span class="comment">// session is expired, then the server sends the expiration</span></span><br><span class="line">        <span class="comment">// response and immediately closes its end of the socket.  If</span></span><br><span class="line">        <span class="comment">// the client is simultaneously writing on its end, then the</span></span><br><span class="line">        <span class="comment">// TCP stack may choose to abort with RST, in which case the</span></span><br><span class="line">        <span class="comment">// client would never receive the session expired event.  See</span></span><br><span class="line">        <span class="comment">// http://docs.oracle.com/javase/6/docs/technotes/guides/net/articles/connection_release.html</span></span><br><span class="line">        disableWrite<span class="params">()</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// Just in case</span></span><br><span class="line">        enableWrite<span class="params">()</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>序列化request对象</li>
+</ul>
+<figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public void createBB<span class="params">()</span> &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        ByteArrayOutputStream baos = new ByteArrayOutputStream<span class="params">()</span>;</span><br><span class="line">        BinaryOutputArchive boa = BinaryOutputArchive.getArchive<span class="params">(baos)</span>;</span><br><span class="line">        boa.writeInt<span class="params">(-<span class="number">1</span>, <span class="string">"len"</span>)</span>; <span class="comment">// We'll fill this in later</span></span><br><span class="line">        <span class="keyword">if</span> <span class="params">(requestHeader != null)</span> &#123;</span><br><span class="line">            requestHeader.serialize<span class="params">(boa, <span class="string">"header"</span>)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> <span class="params">(request instanceof ConnectRequest)</span> &#123;</span><br><span class="line">            request.serialize<span class="params">(boa, <span class="string">"connect"</span>)</span>;</span><br><span class="line">            <span class="comment">// append "am-I-allowed-to-be-readonly" flag</span></span><br><span class="line">            boa.writeBool<span class="params">(readOnly, <span class="string">"readOnly"</span>)</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(request != null)</span> &#123;</span><br><span class="line">            request.serialize<span class="params">(boa, <span class="string">"request"</span>)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        baos.close<span class="params">()</span>;</span><br><span class="line">        this.bb = ByteBuffer.wrap<span class="params">(baos.toByteArray<span class="params">()</span>)</span>;</span><br><span class="line">        this.bb.putInt<span class="params">(this.bb.capacity<span class="params">()</span> - <span class="number">4</span>)</span>;</span><br><span class="line">        this.bb.rewind<span class="params">()</span>;</span><br><span class="line">    &#125; catch <span class="params">(IOException e)</span> &#123;</span><br><span class="line">        LOG.warn<span class="params">(<span class="string">"Ignoring unexpected exception"</span>, e)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/08/26/ZooKeeper源码阅读——MyCommandOptions/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ZooKeeper源码阅读——MyCommandOptions</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="ZooKeeper源码阅读——揭开watcher神秘面纱" data-title="ZooKeeper源码阅读——揭开watcher神秘面纱" data-url="http://yoursite.com/2015/08/27/ZooKeeper源码阅读——揭开watcher神秘面纱/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2015 Techies
+    	</div>
+      	<div class="footer-right">
+      		
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>

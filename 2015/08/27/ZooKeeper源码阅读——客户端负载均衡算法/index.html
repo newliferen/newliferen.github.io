@@ -5,19 +5,19 @@
   
   <title>ZooKeeper源码阅读——客户端负载均衡算法 | Techies | 优雅前行</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="&amp;emsp;&amp;emsp;zk客户端连接、ping server端时采用了轮询算法作为负载均衡算法。
-123456789101112131415161718public InetSocketAddress next(long spinDelay) &amp;#123;    ++currentIndex;    if (currentIndex == serverAddresses.size()) &amp;#12">
+  <meta name="description" content="&amp;emsp;&amp;emsp;zk客户端连接、ping server端时采用了轮询算法作为负载均衡算法。每次向服务端发送ping请求时，都会调用next方法获取一个server地址，然后发送ping请求。
+123456789101112131415161718public InetSocketAddress next(long spinDelay) &amp;#123;    ++currentIndex;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ZooKeeper源码阅读——客户端负载均衡算法">
 <meta property="og:url" content="http://yoursite.com/2015/08/27/ZooKeeper源码阅读——客户端负载均衡算法/index.html">
 <meta property="og:site_name" content="Techies | 优雅前行">
-<meta property="og:description" content="&amp;emsp;&amp;emsp;zk客户端连接、ping server端时采用了轮询算法作为负载均衡算法。
-123456789101112131415161718public InetSocketAddress next(long spinDelay) &amp;#123;    ++currentIndex;    if (currentIndex == serverAddresses.size()) &amp;#12">
-<meta property="og:updated_time" content="2015-08-27T14:48:14.086Z">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;zk客户端连接、ping server端时采用了轮询算法作为负载均衡算法。每次向服务端发送ping请求时，都会调用next方法获取一个server地址，然后发送ping请求。
+123456789101112131415161718public InetSocketAddress next(long spinDelay) &amp;#123;    ++currentIndex;">
+<meta property="og:updated_time" content="2015-08-27T14:52:36.328Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ZooKeeper源码阅读——客户端负载均衡算法">
-<meta name="twitter:description" content="&amp;emsp;&amp;emsp;zk客户端连接、ping server端时采用了轮询算法作为负载均衡算法。
-123456789101112131415161718public InetSocketAddress next(long spinDelay) &amp;#123;    ++currentIndex;    if (currentIndex == serverAddresses.size()) &amp;#12">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;zk客户端连接、ping server端时采用了轮询算法作为负载均衡算法。每次向服务端发送ping请求时，都会调用next方法获取一个server地址，然后发送ping请求。
+123456789101112131415161718public InetSocketAddress next(long spinDelay) &amp;#123;    ++currentIndex;">
   
     <link rel="alternative" href="/atom.xml" title="Techies | 优雅前行" type="application/atom+xml">
   
@@ -221,7 +221,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>&emsp;&emsp;zk客户端连接、ping server端时采用了轮询算法作为负载均衡算法。</p>
+        <p>&emsp;&emsp;zk客户端连接、ping server端时采用了轮询算法作为负载均衡算法。每次向服务端发送ping请求时，都会调用next方法获取一个server地址，然后发送ping请求。</p>
 <figure class="highlight openscad"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public InetSocketAddress next<span class="params">(long spinDelay)</span> &#123;</span><br><span class="line">    ++currentIndex;</span><br><span class="line">    <span class="keyword">if</span> <span class="params">(currentIndex == serverAddresses.size<span class="params">()</span>)</span> &#123;</span><br><span class="line">        currentIndex = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="params">(currentIndex == lastIndex &amp;&amp; spinDelay &gt; <span class="number">0</span>)</span> &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep<span class="params">(spinDelay)</span>;</span><br><span class="line">        &#125; catch <span class="params">(InterruptedException e)</span> &#123;</span><br><span class="line">            LOG.warn<span class="params">(<span class="string">"Unexpected exception"</span>, e)</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="params">(lastIndex == -<span class="number">1</span>)</span> &#123;</span><br><span class="line">        <span class="comment">// We don't want to sleep on the first ever connect attempt.</span></span><br><span class="line">        lastIndex = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return serverAddresses.get<span class="params">(currentIndex)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
